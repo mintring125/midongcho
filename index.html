@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>생성형 AI 활용 연수 · 미동초</title>
+<link rel="icon" href="assets/img/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1F2547">
+<link rel="apple-touch-icon" href="assets/img/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AI 활용 연수">
+<link rel="preload" href="assets/fonts/Paperlogy-8ExtraBold.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="css/deck.css?v=202610231029">
+<link rel="stylesheet" href="css/codex.css?v=202610231029">
+<link rel="stylesheet" href="css/chatgpt.css?v=202610231029">
+</head>
+<body>
+
+<div id="viewport"><div id="stage">
+
+  <!-- 1 표지 -->
+  <section class="slide dark s-cover" data-n="1" data-title="표지">
+    <div class="kicker r" style="--d:0">네 가지 사례로 알아보는</div>
+    <h1 class="r" style="--d:1">생성형 <em>AI</em> 활용 연수</h1>
+    <div class="who r" style="--d:2">황지중앙초등학교 교사 김형석</div>
+    <div class="when r" style="--d:3">2026. 11. 3.(화) 15:30~17:30 (120분) &nbsp;·&nbsp; 태백 베이크우드</div>
+    <div class="cover-qr r" style="--d:4"><div class="qr" id="coverQR" aria-label="gw1.kr/미동초연수 QR"></div><div class="t"><b>연수 자료 바로 보기</b><span>gw1.kr/미동초연수</span></div></div>
+    <img class="char pop" style="--d:3; left:1110px; top:134px; height:572px" src="assets/img/char-jump.png" alt="">
+  </section>
+
+  <!-- 1.5 실시간 의견 나누기 (빈칸을 눌러 바로 쓰고 보내기 · 아래에 의견이 하나씩) -->
+  <section class="slide s-op" data-n="1.5" data-title="의견 나누기">
+    <div class="op-top r" style="--d:0"><span class="pill">함께 생각해 보기</span></div>
+    <img class="char pop" style="--d:2; left:96px" src="assets/img/claude-buddy.png" alt="">
+    <img class="char pop" style="--d:2; right:96px" src="assets/img/chatgpt-buddy.png" alt="">
+    <h2 class="op-q r" style="--d:1">Claude와 ChatGPT로<br><label class="op-blank"><span class="op-typed"></span><i class="op-caret"></i><input class="op-input" maxlength="40" autocomplete="off" enterkeyhint="send" placeholder="내용을 입력해 주세요" aria-label="빈칸에 들어갈 말"></label>을 할 수 있다.</h2>
+    <div class="op-me r" style="--d:2"><span class="op-who"></span><button type="button" class="op-send">보내기</button></div>
+    <div class="op-board r" style="--d:3">
+      <div class="op-head"><span class="op-live"></span>실시간 의견 <b class="op-count">0</b><button type="button" class="op-clear" hidden>비우기</button></div>
+      <div class="op-list"></div>
+    </div>
+    <div class="op-gender" role="group" aria-label="성별"><button type="button" data-g="f">여</button><button type="button" data-g="m">남</button></div>
+  </section>
+
+  <!-- 2 강사 소개 (새 디자인) -->
+  <section class="slide s-intro" data-n="2" data-title="강사 소개">
+    <div class="pill r" style="--d:0">강사 소개</div>
+    <h2 class="hello r" style="--d:1">안녕하세요, <span>김형석</span>입니다</h2>
+    <div class="now r" style="--d:2"><b>황지중앙초등학교</b> 3학년 담임 · 생활부장</div>
+    <img class="char pop float" style="--d:2; left:84px; top:318px; height:520px" src="assets/img/char-present.png" alt="">
+
+    <div class="years r" style="--d:3">
+      <div class="yr">2024<small>’24</small></div>
+      <div class="yr">2025<small>’25</small></div>
+      <div class="yr">2026<small>’26 · 지금</small></div>
+    </div>
+    <div class="track r" style="--d:3"><i style="left:0"></i><i style="left:366px"></i><i style="left:732px"></i></div>
+    <div class="span grow"><span class="lbl">3년째</span><span class="txt">AIEDAP 마스터교원</span><span class="per">’24 – ’26</span></div>
+    <div class="cols">
+      <div class="cell r" style="--d:5"><div class="item"><div class="k">선도교사</div><div class="v">교실혁명<br>선도교사</div></div></div>
+      <div class="cell r" style="--d:6">
+        <div class="item"><div class="k">지원단</div><div class="v">원주<br>에듀테크 지원단</div></div>
+        <div class="item"><div class="k">석사 학위</div><div class="v">한국교원대학교<br>초등수학교육 석사</div></div>
+      </div>
+      <div class="cell r" style="--d:7">
+        <div class="item"><div class="k">교사단</div><div class="v">터치교사단</div></div>
+        <div class="item hl"><div class="k">연수 강사</div><div class="v">AIEDAP 마스터교원<br>신규교사 연수</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 영상 -->
+  <section class="slide s-video" data-n="3" data-title="스토리텔링 영상">
+    <video id="storyVideo" src="assets/video/story.mp4" poster="assets/video/story-poster.jpg" preload="metadata" playsinline></video>
+    <button class="unmute" id="storyUnmute">🔇 소리 켜기</button>
+    <button class="play" id="storyPlay" aria-label="영상 재생"><svg viewBox="0 0 24 24"><path d="M5 3l16 9-16 9z" fill="#1A1F36"/></svg></button>
+  </section>
+
+  <!-- 4 네 가지 사례 -->
+  <section class="slide" data-n="4" data-title="네 가지 사례">
+    <div class="pill r" style="--d:0">오늘의 흐름</div>
+    <h2 class="title r" style="--d:1">네 가지 사례</h2>
+    <div class="case-card r" style="--d:2; left:84px"><span class="num">1</span><img src="assets/img/char-wrist.png" alt=""><div class="name">나이스</div><div class="when">손목이 아플 땐</div><div class="tool">Computer Use</div></div>
+    <div class="case-card r" style="--d:3; left:450px"><span class="num">2</span><img src="assets/img/char-paper.png" alt=""><div class="name">업무포털</div><div class="when">형식이 막막할 땐</div><div class="tool">Skill · MCP</div></div>
+    <div class="case-card r" style="--d:4; left:816px"><span class="num">3</span><img src="assets/img/char-present.png" alt=""><div class="name">학습자료 제작</div><div class="when">자료를 살리고 싶을 땐</div><div class="tool">함께 만들기</div></div>
+    <div class="case-card r" style="--d:5; left:1182px"><span class="num">4</span><img src="assets/img/char-beanbag.png" alt="" style="height:212px; top:46px; left:58%"><div class="name">클라우드 봇</div><div class="when">다 귀찮을 땐</div><div class="tool">Muse Bot</div></div>
+  </section>
+
+  <!-- 5 나이스 -->
+  <section class="slide" data-n="5" data-title="① 나이스">
+    <div class="pill r" style="--d:0">첫 번째 사례</div>
+    <h2 class="title r" style="--d:1">나이스</h2>
+    <div class="row r" style="--d:2; top:270px"><span class="badge red">문제상황</span><div><div class="main">나이스에 성취기준을 입력해야 하는데<br>손목이 아프다</div><div class="sub" style="font-size:30px">평가 계획 내부결재가 난 직후</div></div></div>
+    <div class="row r" style="--d:3; top:461px"><span class="badge blue">해결</span><div><div class="main">Computer Use 활용</div><div class="sub">AI가 화면을 보고 마우스·키보드를 직접 조작</div></div></div>
+    <div class="row r" style="--d:4; top:652px"><span class="badge green">응용</span><div><div class="main">나이스 복무 자동화</div><div class="sub">+ 구글 캘린더 일정 추가 · Remote</div></div></div>
+    <img class="char pop" style="--d:4; left:1254px; top:276px; height:530px" src="assets/img/char-wrist.png" alt="">
+    <img class="char pop" style="--d:6; left:1186px; top:636px; height:180px" src="assets/img/claude-buddy.png" alt="">
+  </section>
+
+  <!-- 6 가상 나이스 화면 -->
+  <section class="slide" data-n="6" data-title="① 가상 나이스 화면">
+    <div class="pill r" style="--d:0">첫 번째 사례 · 실습</div>
+    <h2 class="title r" style="--d:1">가상의 나이스 화면</h2>
+    <button class="shot r" style="--d:2" data-go="7" aria-label="가상 나이스 열기"><img src="assets/img/shot-neis.png" alt=""><span class="go">가상 나이스 열기 →</span></button>
+    <div class="side-badge r" style="--d:3; top:264px; background:var(--red)">왜 가상 화면?</div>
+    <div class="side-text r" style="--d:3; top:340px">EVPN 때문에 인터넷 접속이 안 되어 ChatGPT를 쓸 수 없음</div>
+    <div class="side-badge r" style="--d:4; top:552px; background:var(--blue)">그래서</div>
+    <div class="side-text r" style="--d:4; top:628px">가상의 나이스를<br>Computer Use로 조작</div>
+    <div class="hint r" style="--d:5">▶ 화면을 클릭하면 가상 나이스가 열립니다</div>
+  </section>
+
+  <!-- 8 업무포털 -->
+  <section class="slide" data-n="8" data-title="② 업무포털">
+    <div class="pill r" style="--d:0">두 번째 사례</div>
+    <h2 class="title r" style="--d:1">업무포털</h2>
+    <div class="row r" style="--d:2; top:270px"><span class="badge red">문제상황</span><div><div class="main">계획은 머릿속에 있는데<br>공문 규격 맞추기가 힘들다</div></div></div>
+    <div class="row r" style="--d:3; top:461px"><span class="badge blue">해결</span><div><div class="main">Skill 또는 MCP 활용</div><div class="sub">Skill = 업무 매뉴얼 · MCP = 도구 연결 플러그</div></div></div>
+    <div class="row r" style="--d:4; top:652px"><span class="badge green">응용</span><div><div class="main">Skill을 개선해 보자</div><div class="sub">+ 그래프 삽입 · 내 스타일로 개선</div></div></div>
+    <img class="char pop" style="--d:4; left:1236px; top:264px; height:546px" src="assets/img/char-paper.png" alt="">
+    <img class="char pop" style="--d:6; left:1152px; top:648px; height:168px" src="assets/img/buddy-2.png" alt="">
+  </section>
+
+  <!-- 9 가상 업무포털 화면 -->
+  <section class="slide" data-n="9" data-title="② 가상 업무포털 화면">
+    <div class="pill r" style="--d:0">두 번째 사례 · 실습</div>
+    <h2 class="title r" style="--d:1">가상의 업무포털 화면</h2>
+    <button class="shot r" style="--d:2" data-go="10" aria-label="가상 에듀파인 열기"><img src="assets/img/shot-portal.png" alt=""><span class="go">가상 에듀파인 열기 →</span></button>
+    <div class="step r" style="--d:3; top:270px"><b>1</b><span>공문을 규격에 맞게 생성</span></div>
+    <div class="step r" style="--d:4; top:436px"><b>2</b><span>가상 업무포털에 직접 상신</span></div>
+    <div class="step r" style="--d:5; top:602px"><b>3</b><span>결재 결과 받아 보기</span></div>
+    <div class="hint r" style="--d:6">▶ 화면을 클릭하면 가상 업무포털이 열립니다</div>
+  </section>
+
+  <!-- 11 학습자료 제작 -->
+  <section class="slide" data-n="11" data-title="③ 학습자료 제작">
+    <div class="pill r" style="--d:0">세 번째 사례</div>
+    <h2 class="title r" style="--d:1">학습자료 제작</h2>
+    <img class="char pop float" style="--d:1; left:1314px; top:50px; height:198px" src="assets/img/chatgpt-buddy.png" alt="">
+    <div class="row r" style="--d:2; top:270px; width:1432px; height:126px"><span class="badge red">문제상황</span><div class="main">연구발표를 하는데 인터랙티브한 PPT가 필요해</div></div>
+    <div class="badge blue r abs" style="--d:3; left:120px; top:430px; margin:0">해결방법</div>
+    <div class="tools5">
+      <div class="r" style="--d:4"><img src="assets/img/ic-motion.png" alt=""><span>모션그래픽</span></div>
+      <div class="r" style="--d:5"><img src="assets/img/ic-subtitle.png" alt=""><span>자막 삽입</span></div>
+      <div class="r" style="--d:6"><img src="assets/img/ic-game.png" alt=""><span>게임 만들기</span></div>
+      <div class="r" style="--d:7"><img src="assets/img/ic-webapp.png" alt=""><span>웹앱</span></div>
+      <div class="r" style="--d:8"><img src="assets/img/ic-ppt.png" alt=""><span>PPT 애니메이션</span></div>
+    </div>
+    <div class="example r" style="--d:9"><span class="badge navy">예시</span><a href="https://indischool.com/boards/libExtra/37605214" target="_blank" rel="noopener">https://indischool.com/boards/libExtra/37605214</a></div>
+  </section>
+
+  <!-- 12 하나씩 해 보자 -->
+  <section class="slide" data-n="12" data-title="③ 하나씩 해 보자">
+    <div class="pill r" style="--d:0">세 번째 사례 · 실습</div>
+    <h2 class="title r" style="--d:1">하나씩 해 보자</h2>
+    <img class="char pop" style="--d:1; left:1152px; top:60px; height:180px" src="assets/img/claude-buddy.png" alt="">
+    <img class="char pop" style="--d:2; left:1338px; top:56px; height:186px" src="assets/img/chatgpt-buddy.png" alt="">
+    <div class="tries">
+      <div class="try r" style="--d:2"><b>1</b><span class="t">모션그래픽</span><span class="q">“이 영상 스타일로 00 30초 도입 영상 만들어 줘.”</span></div>
+      <div class="try r" style="--d:3"><b>2</b><span class="t">자막 삽입</span><span class="q">“이 영상에 ‘놀면 뭐하니’ 자막 넣어 줘.”</span></div>
+      <div class="try-pick">
+        <span class="pick-tag r" style="--d:4">둘 중<br>하나</span>
+        <div class="try r" style="--d:4"><b>3</b><span class="t">게임 만들기</span><span class="q">“영상 내용으로 카훗 스타일 게임 만들어 줘.”</span></div>
+        <div class="try r" style="--d:5"><b>4</b><span class="t">웹앱 만들기</span><span class="q">“띵커벨 보드처럼 QR로 의견 받는 웹앱 만들어 줘.”</span></div>
+      </div>
+      <div class="try r" style="--d:6"><b>5</b><span class="t">PPT 생성 자동화</span><span class="q">“만든 자료로 수업 PPT 만들어 줘.”</span></div>
+    </div>
+  </section>
+
+  <!-- 14 클라우드 봇 -->
+  <section class="slide" data-n="14" data-title="④ 클라우드 봇">
+    <div class="pill r" style="--d:0">네 번째 사례</div>
+    <h2 class="title r" style="--d:1">클라우드 봇</h2>
+    <div class="row r" style="--d:2; top:270px"><span class="badge red">문제상황</span><div><div class="main">컴퓨터도 켜기 싫고 돈 쓰기도 싫고<br>그냥 다 되었으면 좋겠다</div></div></div>
+    <div class="row r" style="--d:3; top:461px"><span class="badge blue">해결방법</span><div><div class="main">Muse Bot<a class="sum-link on-light" href="https://muse.ai/" target="_blank" rel="noopener" title="muse.ai 새 탭으로 열기">muse.ai ↗</a></div><div class="sub">클라우드의 자기 컴퓨터로 일하는 AI 비서</div></div></div>
+    <div class="abs" style="left:84px; top:652px; width:1074px; display:grid; grid-template-columns:repeat(3,1fr); gap:24px">
+      <div class="r" style="--d:4; height:120px; border:2px solid var(--line); border-radius:22px; display:grid; place-items:center; font-size:33px; font-weight:700">메신저 한마디면 끝</div>
+      <div class="r" style="--d:5; height:120px; border:2px solid var(--line); border-radius:22px; display:grid; place-items:center; font-size:33px; font-weight:700">앱을 꺼도 계속 일함</div>
+      <div class="r" style="--d:6; height:120px; border:2px solid var(--line); border-radius:22px; display:grid; place-items:center; font-size:33px; font-weight:700">기본 버전은 무료</div>
+    </div>
+    <img class="char pop" style="--d:3; left:1200px; top:270px; height:310px" src="assets/img/char-beanbag.png" alt="">
+    <img class="char pop float" style="--d:5; left:1290px; top:598px; height:224px" src="assets/img/muse-buddy.png" alt="">
+  </section>
+
+  <!-- 15 정리 -->
+  <section class="slide dark s-end" data-n="15" data-title="정리">
+    <div class="pill r" style="--d:0; left:108px; top:72px; padding:0 48px; height:60px">정리</div>
+    <h2 class="title r" style="--d:1; left:108px; top:150px">이럴 땐, 이렇게</h2>
+    <div class="sum">
+      <b class="r" style="--d:2">1</b><span class="a r" style="--d:2">손목이 아플 땐</span><span class="arr r" style="--d:2">→</span><span class="c r" style="--d:3">Computer Use</span>
+      <b class="r" style="--d:4">2</b><span class="a r" style="--d:4">형식이 막막할 땐</span><span class="arr r" style="--d:4">→</span><span class="c r" style="--d:5">Skill과 MCP</span>
+      <b class="r" style="--d:6">3</b><span class="a r" style="--d:6">자료를 살리고 싶을 땐</span><span class="arr r" style="--d:6">→</span><span class="c r" style="--d:7">함께 만들기</span>
+      <b class="r" style="--d:8">4</b><span class="a r" style="--d:8">다 귀찮을 땐</span><span class="arr r" style="--d:8">→</span><span class="c r" style="--d:9">클라우드 봇<a class="sum-link" href="https://muse.ai/" target="_blank" rel="noopener" title="muse.ai 새 탭으로 열기">muse.ai ↗</a></span>
+    </div>
+    <div class="close r" style="--d:10">자, 이제 직접 해 볼까요?</div>
+    <img class="char pop" style="--d:6; left:1272px; top:186px; height:620px" src="assets/img/char-point.png" alt="">
+  </section>
+
+</div></div>
+
+<!-- 7 가상 나이스 (실제 화면) -->
+<section class="app" data-n="7" data-title="① 가상 나이스 실습" data-src="neis/?v=202610231029">
+  <div class="appbar">
+    <span class="tag">첫 번째 사례 · 실습</span><h2>가상의 나이스 프로그램</h2><span class="sp"></span>
+    <button class="abtn cg-btn" id="cgBtn" aria-pressed="false" title="ChatGPT 창 열기/닫기 (컴퓨터 사용 시연)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.2l7.6 4.4v8.8L12 20.8l-7.6-4.4V7.6z"/><path d="M12 3.2v8.8l7.6 4.4M12 12l-7.6 4.4"/></svg><span class="lbl"> ChatGPT</span></button>
+    <button class="abtn guide-btn" data-guide="guide7" aria-pressed="false" title="실습 안내 보기/닫기">📘<span class="lbl"> 실습 안내</span></button>
+    <button class="abtn" data-reload title="다시 불러오기">↻<span class="lbl"> 다시 불러오기</span></button>
+    <button class="abtn" data-full title="전체 화면 (F)"><svg class="fs-ic" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">전체 화면</span></button>
+    <button class="abtn icon" data-prev aria-label="이전">◀</button><button class="abtn icon" data-next aria-label="다음">▶</button>
+  </div>
+  <div class="app-stage" data-minw="1600" data-minh="860"><iframe class="full" title="가상 나이스" allow="clipboard-read; clipboard-write"></iframe></div>
+  <div class="guide-pop" id="guide7" hidden>
+    <div class="guide-in s-solo2" role="dialog" aria-label="실습 안내: Codex로 크롬 조작하기">
+      <div class="guide-head"><span class="pill">첫 번째 사례 · 각자 해 보기</span><h3>Codex로 크롬 조작하기</h3><button type="button" class="guide-x" data-guide="guide7" aria-label="닫기">✕</button></div>
+      <div class="guide-cards">
+    <div class="sv-card">
+      <div class="sv-h"><b>1</b>Codex 앱 설정</div>
+      <svg class="sv-fig" viewBox="0 0 440 236" role="img" aria-label="Codex 앱 설정의 컴퓨터 사용 화면에서 Google Chrome을 켜는 그림">
+        <rect x="1" y="1" width="438" height="234" rx="14" fill="#fff" stroke="#D5DBE8" stroke-width="2"/>
+        <rect x="1" y="1" width="130" height="234" rx="14" fill="#F6F7F9"/><rect x="120" y="1" width="11" height="234" fill="#F6F7F9"/>
+        <text x="14" y="28" font-size="15" font-weight="800" fill="#15171C">설정</text>
+        <text x="14" y="54" font-size="10.5" fill="#4E586C">통합</text>
+        <text x="20" y="74" font-size="11.5" fill="#4E586C">◎ 플러그인</text>
+        <text x="20" y="96" font-size="11.5" fill="#4E586C">⚿ 비밀번호</text>
+        <rect x="8" y="106" width="114" height="26" rx="7" fill="#fff" stroke="#3B82F6" stroke-width="2"/>
+        <text x="20" y="124" font-size="12" font-weight="800" fill="#15171C">▷ 컴퓨터 사용</text>
+        <text x="20" y="150" font-size="11.5" fill="#4E586C">⌗ 앱샷</text>
+        <text x="20" y="172" font-size="11.5" fill="#4E586C">▢ 브라우저</text>
+        <text x="20" y="194" font-size="11.5" fill="#4E586C">☁ 클라우드 컴퓨터</text>
+        <text x="146" y="36" font-size="17" font-weight="800" fill="#15171C">컴퓨터 사용</text>
+        <text x="146" y="54" font-size="9.5" fill="#363D4F">ChatGPT가 컴퓨터의 다른 앱을 사용하는 방식을 관리합니다</text>
+        <text x="146" y="78" font-size="11" font-weight="700" fill="#15171C">제어</text>
+        <rect x="142" y="86" width="286" height="138" rx="10" fill="#fff" stroke="#E6E8EE"/>
+        <rect x="152" y="96" width="22" height="22" rx="6" fill="#8EC5FF"/><path d="M158 102 l12 4 -5 2 -2 5z" fill="#fff"/>
+        <text x="182" y="106" font-size="11.5" font-weight="700" fill="#15171C">모든 앱</text>
+        <text x="182" y="119" font-size="8.5" fill="#363D4F">ChatGPT가 컴퓨터의 앱을 제어하도록 허용</text>
+        <rect x="390" y="99" width="30" height="16" rx="8" fill="#2F6BFF"/><circle cx="412" cy="107" r="6" fill="#fff"/>
+        <line x1="150" y1="128" x2="420" y2="128" stroke="#EEF0F4"/>
+        <rect x="146" y="132" width="278" height="46" rx="8" fill="#EEF4FF" stroke="#2F6BFF" stroke-width="1.5"/>
+        <circle cx="163" cy="155" r="11" fill="#EA4335"/><path d="M163 144 a11 11 0 0 1 9.5 16.5 L163 155Z" fill="#FBBC05"/><path d="M153.5 160.5 a11 11 0 0 1 0-11 L163 155Z" fill="#34A853"/><circle cx="163" cy="155" r="4.5" fill="#4285F4" stroke="#fff" stroke-width="1.6"/>
+        <text x="182" y="152" font-size="11.5" font-weight="800" fill="#15171C">Google Chrome</text>
+        <circle cx="185" cy="164" r="3" fill="#16A34A"/><text x="192" y="167" font-size="8.5" fill="#4E586C">브라우저 확장 프로그램 설치함</text>
+        <rect x="346" y="146" width="34" height="18" rx="5" fill="#F1F2F5"/><text x="363" y="159" text-anchor="middle" font-size="9" fill="#15171C">관리</text>
+        <rect x="390" y="147" width="30" height="16" rx="8" fill="#2F6BFF"/><circle cx="412" cy="155" r="6" fill="#fff"/>
+        <path d="M408 160 l0 20 l5.5 -4.5 l3.6 8 l3.6 -1.8 l-3.6 -8 l7 0z" fill="#15171C" stroke="#fff" stroke-width="1.4"/>
+        <circle cx="163" cy="200" r="10" fill="#0E7FD4"/><circle cx="163" cy="200" r="5" fill="#36D399"/>
+        <text x="182" y="198" font-size="11.5" font-weight="700" fill="#15171C">Microsoft Edge</text>
+        <text x="182" y="211" font-size="8.5" fill="#4E586C">브라우저 확장 프로그램</text>
+        <rect x="390" y="192" width="30" height="16" rx="8" fill="#C9CCD4"/><circle cx="398" cy="200" r="6" fill="#fff"/>
+      </svg>
+      <ul class="sv-li"><li>Codex 앱 → <b>설정</b> → 통합 「<b>컴퓨터 사용</b>」</li><li><b>Google Chrome</b> 켜기 → ‘확장 프로그램 설치함’ 확인</li></ul>
+    </div>
+
+    <div class="sv-card">
+      <div class="sv-h"><b>2</b>크롬 확장 설치</div>
+      <svg class="sv-fig" viewBox="0 0 440 236" role="img" aria-label="크롬 웹 스토어에서 ChatGPT 확장을 추가하고 고정하는 그림">
+        <rect x="1" y="1" width="438" height="234" rx="14" fill="#fff" stroke="#D5DBE8" stroke-width="2"/>
+        <rect x="1" y="1" width="438" height="46" rx="14" fill="#F1F3F4"/><rect x="1" y="34" width="438" height="13" fill="#F1F3F4"/>
+        <rect x="14" y="12" width="300" height="24" rx="12" fill="#fff"/>
+        <text x="28" y="29" font-size="11.5" fill="#2F3540">chromewebstore.google.com</text>
+        <g transform="translate(372 13)"><rect width="22" height="22" rx="5" fill="#fff" stroke="#DADCE0"/><path d="M6 8h4V6.5a1.8 1.8 0 0 1 3.6 0V8h3v3h-1.5a1.8 1.8 0 0 0 0 3.6H16.6V17H13v-1.5a1.8 1.8 0 0 0-3.6 0V17H6z" fill="#2F3540"/></g>
+        <g transform="translate(400 13)"><rect width="22" height="22" rx="5" fill="#15171C"/><circle cx="11" cy="11" r="6" fill="none" stroke="#fff" stroke-width="2"/><text x="11" y="15" text-anchor="middle" font-size="7" fill="#fff" font-weight="800">G</text></g>
+        <text x="416" y="56" text-anchor="middle" font-size="12">📌</text>
+        <rect x="24" y="70" width="64" height="64" rx="16" fill="#15171C"/>
+        <circle cx="56" cy="102" r="17" fill="none" stroke="#fff" stroke-width="3.5"/><circle cx="56" cy="102" r="7" fill="#fff"/>
+        <text x="104" y="92" font-size="20" font-weight="800" fill="#202124">ChatGPT</text>
+        <text x="104" y="114" font-size="12" fill="#2F3540">openai.com · 확장 프로그램</text>
+        <text x="104" y="132" font-size="12" fill="#F9AB00">★★★★☆</text>
+        <rect x="270" y="150" width="148" height="40" rx="20" fill="#1A73E8"/>
+        <text x="344" y="175" text-anchor="middle" font-size="15" font-weight="800" fill="#fff">Chrome에 추가</text>
+        <path d="M392 178 l0 22 l6 -5 l4 9 l4 -2 l-4 -9 l8 0z" fill="#15171C" stroke="#fff" stroke-width="1.5"/>
+        <text x="24" y="214" font-size="12" fill="#2F3540">🔍 스토어에서 “ChatGPT” 검색</text>
+      </svg>
+      <ul class="sv-li"><li>크롬 웹 스토어 <b>ChatGPT</b> 확장 → <b>Chrome에 추가</b></li><li>🧩 → 📌 <b>고정</b>, 같은 계정으로 로그인</li></ul>
+      <a class="sv-link" href="https://chromewebstore.google.com/detail/chatgpt/hehggadaopoacecdllhhajmbjkdcmajg" target="_blank" rel="noopener">크롬 확장 바로 설치하기 ↗</a>
+    </div>
+
+    <div class="sv-card sv-prompt">
+      <div class="sv-h"><b>3</b>평가계획 → 프롬프트</div>
+      <div class="sv-step"><span class="n">①</span>학교알리미에서 우리 학교<br><b>평가계획</b> 내려받기</div>
+      <a class="sv-link y" href="https://www.schoolinfo.go.kr/" target="_blank" rel="noopener">학교알리미 바로가기 ↗<small>schoolinfo.go.kr</small></a>
+      <div class="sv-step"><span class="n">②</span>Codex에 붙여 넣기</div>
+      <button type="button" class="sv-p big sv-copy" data-copy="크롬에서 연수용 가상 나이스에 평가계획을 입력해 줘." title="눌러서 복사">크롬에서 연수용 가상 나이스에<br>평가계획을 입력해 줘.<span class="sv-copytag">📋 누르면 복사</span></button>
+    </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 가상 에듀파인 (실제 화면) -->
+<section class="app" data-n="10" data-title="② 가상 에듀파인 실습" data-src="edufine/?v=202610231029">
+  <div class="appbar">
+    <span class="tag">두 번째 사례 · 실습</span><h2>가상의 에듀파인 프로그램</h2><span class="sp"></span>
+    <button class="abtn cg-btn" id="cgBtn10" aria-pressed="false" title="ChatGPT 창 열기/닫기 (컴퓨터 사용 시연)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.2l7.6 4.4v8.8L12 20.8l-7.6-4.4V7.6z"/><path d="M12 3.2v8.8l7.6 4.4M12 12l-7.6 4.4"/></svg><span class="lbl"> ChatGPT</span></button>
+    <button class="abtn guide-btn" data-guide="guide10" aria-pressed="false" title="실습 안내 보기/닫기">📘<span class="lbl"> 실습 안내</span></button>
+    <button class="abtn guide-btn host-only" data-guide="guide10p" aria-pressed="false" title="패들렛 만들기 프롬프트 (강사 모드에서만 보임)">🖼<span class="lbl"> 패들렛 만들기</span></button>
+    <button class="abtn" data-reload title="다시 불러오기">↻<span class="lbl"> 다시 불러오기</span></button>
+    <button class="abtn" data-full title="전체 화면 (F)"><svg class="fs-ic" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">전체 화면</span></button>
+    <button class="abtn icon" data-prev aria-label="이전">◀</button><button class="abtn icon" data-next aria-label="다음">▶</button>
+  </div>
+  <div class="app-stage" data-minw="1280" data-minh="880"><iframe class="full" title="가상 에듀파인" allow="clipboard-read; clipboard-write"></iframe></div>
+  <div class="guide-pop" id="guide10" hidden>
+    <div class="guide-in s-solo2" role="dialog" aria-label="실습 안내: 공문 만들고 자동 상신하기">
+      <div class="guide-head"><span class="pill">두 번째 사례 · 각자 해 보기</span><h3>계획서 만들고 자동 상신하기</h3><button type="button" class="guide-x" data-guide="guide10" aria-label="닫기">✕</button></div>
+      <div class="guide-cards">
+
+        <div class="sv-card">
+          <div class="sv-h"><b>1</b>스킬 설치</div>
+          <svg class="sv-fig" viewBox="0 0 440 200" role="img" aria-label="Codex 입력창에 hwpx와 kordoc 두 스킬 설치를 요청하는 그림">
+            <rect x="1" y="1" width="438" height="198" rx="14" fill="#fff" stroke="#D5DBE8" stroke-width="2"/>
+            <rect x="1" y="1" width="438" height="30" rx="14" fill="#F1F2F5"/><rect x="1" y="20" width="438" height="11" fill="#F1F2F5"/>
+            <circle cx="20" cy="16" r="5" fill="#FF6159"/><circle cx="36" cy="16" r="5" fill="#FFBD2E"/><circle cx="52" cy="16" r="5" fill="#28C941"/>
+            <text x="220" y="21" text-anchor="middle" font-size="12" font-weight="700" fill="#363D4F">Codex</text>
+            <rect x="150" y="40" width="270" height="66" rx="14" fill="#F1F2F5"/>
+            <text x="164" y="60" font-size="12.5" fill="#15171C">아래 두 스킬을 설치해 줘.</text>
+            <text x="164" y="77" font-size="10.5" fill="#2457D6">github.com/jkf87/hwpx-skill</text>
+            <text x="164" y="93" font-size="10.5" fill="#2457D6">github.com/chrisryugj/kordoc</text>
+            <text x="22" y="126" font-size="12.5" fill="#15171C">✓ hwpx · kordoc 스킬을 설치했습니다.</text>
+            <text x="22" y="144" font-size="10.5" fill="#363D4F">한글 문서를 만들고(hwpx) 읽을 수(kordoc) 있어요.</text>
+            <rect x="16" y="156" width="408" height="32" rx="16" fill="#fff" stroke="#D9DCE3"/>
+            <text x="32" y="177" font-size="11" fill="#4E586C">무엇을 만들어 볼까요?</text>
+            <circle cx="406" cy="172" r="11" fill="#15171C"/><path d="M406 177 v-9 M402 172 l4 -4 4 4" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+          </svg>
+          <button type="button" class="sv-p sv-copy light" data-copy="아래 두 스킬을 설치해 줘.&#10;https://github.com/jkf87/hwpx-skill&#10;https://github.com/chrisryugj/kordoc" title="눌러서 복사">아래 두 스킬을 설치해 줘.<br><span class="u">https://github.com/jkf87/hwpx-skill</span><br><span class="u">https://github.com/chrisryugj/kordoc</span><span class="sv-copytag">📋 누르면 복사</span></button>
+        </div>
+
+        <div class="sv-card">
+          <div class="sv-h"><b>2</b>운영 계획서 만들기</div>
+          <ul class="sv-li"><li>설치한 <b>hwpx 스킬</b>로 한글 파일 생성</li></ul>
+          <button type="button" class="sv-p sv-copy light tall" data-copy="아래 내용으로 운영 계획서 만들어줘.&#10;&#10;미동초등학교 찾아가는 AI 활용 연수&#10;1) 일   시: 11월 3일(화) 3:20~5:00 (90분)&#10;2) 장   소: 베이크우드&#10;3) 대   상: 미동초 8명&#10;4) 준비물: 노트북 8대&#10;(Codex, Claudecode, Muse 설치)&#10;5) 내   용: 업무자동화 40분-&gt;10분 휴식-&gt;수업컨텐츠 제작 40분" title="눌러서 복사"><b>아래 내용으로 운영 계획서 만들어줘.</b><br><br>미동초등학교 찾아가는 AI 활용 연수<br>1) 일&nbsp;&nbsp;시: 11월 3일(화) 3:20~5:00 (90분)<br>2) 장&nbsp;&nbsp;소: 베이크우드<br>3) 대&nbsp;&nbsp;상: 미동초 8명<br>4) 준비물: 노트북 8대<br>&nbsp;&nbsp;&nbsp;(Codex, Claudecode, Muse 설치)<br>5) 내&nbsp;&nbsp;용: 업무자동화 40분→10분 휴식→수업컨텐츠 제작 40분<span class="sv-copytag">📋 누르면 복사</span></button>
+        </div>
+
+        <div class="sv-card sv-prompt">
+          <div class="sv-h"><b>3</b>자동 상신</div>
+          <svg class="sv-fig" viewBox="0 0 440 170" role="img" aria-label="가상 에듀파인 기안창에서 결재올림을 누르는 그림">
+            <rect x="1" y="1" width="438" height="168" rx="14" fill="#fff" stroke="#D5DBE8" stroke-width="2"/>
+            <rect x="1" y="1" width="438" height="34" rx="14" fill="#2C85BF"/><rect x="1" y="22" width="438" height="13" fill="#2C85BF"/>
+            <text x="16" y="23" font-size="13" font-weight="800" fill="#fff">기안 (연수용 가상 에듀파인)</text>
+            <text x="18" y="60" font-size="11" font-weight="700" fill="#4E586C">제목</text>
+            <rect x="60" y="47" width="364" height="20" rx="3" fill="#fff" stroke="#C9CCD4"/>
+            <text x="66" y="61" font-size="10.5" fill="#15171C">2026학년도 찾아가는 AI 활용 연수 운영 계획</text>
+            <text x="18" y="88" font-size="11" font-weight="700" fill="#4E586C">첨부</text>
+            <text x="60" y="88" font-size="10.5" fill="#2457D6">📎 운영 계획서.hwpx</text>
+            <rect x="18" y="100" width="300" height="56" rx="4" fill="#F6F7F9"/>
+            <text x="28" y="120" font-size="10" fill="#4E586C">1. 교원의 생성형 AI 활용 역량을 높이기 위하여…</text>
+            <text x="28" y="138" font-size="10" fill="#4E586C">가. 일시: 2026. 11. 3.(화) 15:20∼17:00</text>
+            <rect x="332" y="112" width="92" height="34" rx="6" fill="#FFD23F"/>
+            <text x="378" y="134" text-anchor="middle" font-size="13" font-weight="800" fill="#1A1F36">결재올림</text>
+            <path d="M406 136 l0 22 l6 -5 l4 9 l4 -2 l-4 -9 l8 0z" fill="#15171C" stroke="#fff" stroke-width="1.5"/>
+          </svg>
+          <button type="button" class="sv-p big sv-copy" data-copy="만든 운영 계획서를 크롬의 연수용 가상 에듀파인에 기안해서 상신해 줘." title="눌러서 복사">만든 운영 계획서를 크롬의<br>연수용 가상 에듀파인에<br>기안해서 상신해 줘.<span class="sv-copytag">📋 누르면 복사</span></button>
+        </div>
+
+      </div>
+      <div class="sv-strip">
+        <div class="sv-h"><b>4</b>Remote로 확인하기</div>
+        <svg class="sv-phone" viewBox="0 0 150 200" role="img" aria-label="휴대폰에서 Codex에 결재 상태를 묻고 결재완료 답을 받는 그림">
+          <rect x="4" y="4" width="142" height="192" rx="22" fill="#15171C"/>
+          <rect x="11" y="16" width="128" height="170" rx="14" fill="#fff"/>
+          <rect x="58" y="8" width="34" height="5" rx="2.5" fill="#3A3F4B"/>
+          <text x="75" y="33" text-anchor="middle" font-size="10" font-weight="800" fill="#15171C">Codex · 내 PC</text>
+          <line x1="11" y1="40" x2="139" y2="40" stroke="#E6E8EE"/>
+          <rect x="44" y="50" width="88" height="38" rx="10" fill="#F1F2F5"/>
+          <text x="52" y="66" font-size="8.5" fill="#15171C">결재 상태</text>
+          <text x="52" y="79" font-size="8.5" fill="#15171C">확인해 줘</text>
+          <rect x="18" y="98" width="100" height="52" rx="10" fill="#E8F7F1"/>
+          <text x="26" y="115" font-size="8.5" font-weight="800" fill="#0B6B53">✓ 결재완료</text>
+          <text x="26" y="129" font-size="7.5" fill="#363D4F">교장 결재 완료,</text>
+          <text x="26" y="141" font-size="7.5" fill="#363D4F">문서등록대장 등록</text>
+          <rect x="18" y="160" width="114" height="18" rx="9" fill="#fff" stroke="#D9DCE3"/>
+          <circle cx="123" cy="169" r="6" fill="#15171C"/>
+        </svg>
+        <ul class="sv-li">
+          <li>Codex 앱 <b>설정</b>에서 <b>Remote(원격 제어)</b> 켜기</li>
+          <li>휴대폰 <b>ChatGPT 앱 → Codex → 내 PC</b>에서 이어서 확인</li>
+        </ul>
+        <button type="button" class="sv-p big sv-copy" data-copy="가상 에듀파인에서 방금 상신한 문서의 결재 상태를 확인해서 알려 줘." title="눌러서 복사">가상 에듀파인에서 방금 상신한 문서의<br>결재 상태를 확인해서 알려 줘.<span class="sv-copytag">📋 누르면 복사</span></button>
+      </div>
+    </div>
+  </div>
+  <!-- 강사 모드에서만: 교과서 활동 → 패들렛 만들기 프롬프트 (수강자 화면에는 따라가지 않음) -->
+  <div class="guide-pop" id="guide10p" data-host-only hidden>
+    <div class="guide-in s-solo2 pad-in" role="dialog" aria-label="패들렛 만들기 프롬프트">
+      <div class="guide-head"><span class="pill">수업 자료 · 강사 시연</span><h3>교과서 활동으로 패들렛 만들기</h3><button type="button" class="guide-x" data-guide="guide10p" aria-label="닫기">✕</button></div>
+      <div class="guide-cards">
+        <div class="sv-card pad-pic">
+          <div class="sv-h"><b>1</b>교과서 사진 넣기</div>
+          <img src="assets/img/textbook-matter-states.webp" alt="과학 교과서 30~31쪽: 물질의 상태를 나타내는 사진을 찾아라! (고체·액체·기체 사진을 조사해 공유 플랫폼에 올리기)">
+          <div class="pad-btns">
+            <button type="button" class="pad-b" data-copy-img="assets/img/textbook-matter-states.webp">🖼 사진 복사</button>
+            <a class="pad-b ghost" href="assets/img/textbook-matter-states.webp" download="교과서-물질의-상태-사진찾기.webp">⬇ 사진 받기</a>
+          </div>
+        </div>
+        <div class="sv-card sv-prompt pad-prompt">
+          <div class="sv-h"><b>2</b>프롬프트 붙여 넣기</div>
+          <div class="sv-step"><span class="n">①</span>AI 채팅창에 <b>교과서 사진</b>을<br>붙여 넣거나 끌어다 놓기</div>
+          <div class="sv-step"><span class="n">②</span>아래 프롬프트를 복사해 함께 보내기</div>
+          <button type="button" class="sv-p big sv-copy" data-copy="이 사진과 이 교과서 활동으로 학생들이 사진을 올릴 패들렛을 만들어줘. 어울리는 배경 이미지와 섹션이미지를 만들어 넣어줘." title="눌러서 복사">이 사진과 이 교과서 활동으로<br>학생들이 사진을 올릴 패들렛을<br>만들어줘. 어울리는 배경 이미지와<br>섹션이미지를 만들어 넣어줘.<span class="sv-copytag">📋 누르면 복사</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 Claude Code · Codex CLI → 미니 앱 (AI 고르기) -->
+<section class="app cx" data-n="13" data-title="③ Claude · Codex로 함께 만들기">
+  <div class="appbar">
+    <span class="tag">세 번째 사례 · 실습</span><h2>Claude · Codex로 함께 만들기</h2><span class="sp"></span>
+    <button class="abtn guide-btn" data-guide="guide13" aria-pressed="false" title="모션 · 게임 · 앱 예시 보기/닫기">✨<span class="lbl"> 예시 둘러보기</span></button>
+    <a class="abtn" href="download/ai-bridge.bat" download="AI-브리지-올인원.bat" title="AI 브리지(Claude + Codex, 올인원 bat) 내려받기">⬇<span class="lbl"> 브리지 bat 받기</span></a>
+    <button class="abtn" data-full title="전체 화면 (F)"><svg class="fs-ic" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">전체 화면</span></button>
+    <button class="abtn icon" data-prev aria-label="이전">◀</button><button class="abtn icon" data-next aria-label="다음">▶</button>
+  </div>
+  <div class="app-stage" data-minw="1280" data-minh="720"><div class="cx-win">
+    <aside class="cx-nav">
+      <div class="cx-brand"><span class="cx-logo"><svg viewBox="0 0 24 24"><path d="M4 7l5 5-5 5M12 18h8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span id="cxBrandName">Claude</span> <small>mini</small></div>
+      <div class="cx-eng" id="cxEng" role="group" aria-label="AI 고르기"><button type="button" data-e="claude" class="on"><b>Claude</b><small>연결 확인 중</small></button><button type="button" data-e="codex"><b>Codex</b><small>연결 확인 중</small></button></div>
+      <button class="cx-newbtn" id="cxNew"><span>＋</span> 새 스레드</button>
+      <div class="cx-view" id="cxView" hidden><button type="button" data-v="mine" class="on">내 스레드</button><button type="button" data-v="all">모두 보기</button></div>
+      <div class="cx-navlabel"><span id="cxNavLabel">스레드</span><button class="cx-clearall" id="cxClearAll" type="button" hidden>모두 지우기</button></div>
+      <div class="cx-threads" id="cxThreads"></div>
+      <div class="cx-navfoot">
+        <div class="cx-status" id="cxStatus"><i></i><span>연결 확인 중…</span></div>
+        <div class="cx-ws" id="cxWs">내 작업 PC: 아직 없음</div>
+        <button class="cx-setbtn" id="cxSetOpen" type="button">⚙ 연결 관리</button>
+      </div>
+    </aside>
+
+    <main class="cx-main">
+      <div class="cx-mainhead"><b id="cxTitle">새 스레드</b><span class="cx-chip" id="cxModel">claude</span></div>
+      <div class="cx-log" id="cxLog"></div>
+      <div class="cx-composer-wrap">
+        <div class="cx-chips" id="cxChips"></div>
+        <form class="cx-composer" id="cxForm">
+          <div class="cx-attach" id="cxAttach"></div>
+          <textarea id="cxPrompt" rows="2" placeholder="무엇을 만들어 볼까요?  (Enter 보내기 · Shift+Enter 줄바꿈)"></textarea>
+          <div class="cx-cbar">
+            <label class="cx-icbtn" title="파일 올리기">＋<input type="file" id="cxUpload" multiple hidden></label>
+            <span class="cx-pill">📁 workspace</span>
+            <span class="cx-pill">로컬에서 실행</span>
+            <span class="sp"></span>
+            <button type="submit" class="cx-send" id="cxSend" aria-label="보내기"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button type="button" class="cx-send stop" id="cxStop" aria-label="중지" hidden><svg viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor"/></svg></button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <aside class="cx-right">
+      <div class="cx-tabs"><button class="on" data-tab="prev">미리보기</button><button data-tab="files">파일</button><span class="sp"></span><a class="cx-open" id="cxPrevDl" download hidden title="이 파일 내려받기">⬇ 받기</a><a class="cx-open" id="cxPrevOpen" target="_blank" rel="noopener" hidden>새 창 ↗</a></div>
+      <div class="cx-pane on" data-pane="prev">
+        <div class="cx-prevname" id="cxPrevName"></div>
+        <div class="cx-prevbox" id="cxPrevBox"><div class="cx-empty">AI가 만든 HTML · 영상 · 이미지가<br>여기에 바로 나타납니다</div></div>
+      </div>
+      <div class="cx-pane" data-pane="files">
+        <div class="cx-filelist" id="cxFiles"></div>
+        <a class="cx-zipall" id="cxZip" download hidden>⬇ 결과물 모두 받기 (zip)</a>
+        <div class="cx-filehint">파일을 창에 끌어다 놓으면 작업 폴더에 올라갑니다.<br>이미지는 <b>첨부</b>를 눌러 AI에게 보여 줄 수 있어요.</div>
+      </div>
+    </aside>
+  </div>
+  </div>
+  <div class="cx-set" id="cxSet" hidden>
+    <div class="cx-setbox" role="dialog" aria-label="연결 관리">
+      <div class="cx-sethead"><b>연결 관리</b><span class="sp"></span><button type="button" id="cxSetClose" aria-label="닫기">✕</button></div>
+      <p class="cx-sethelp">강사 PC마다 <code>start-codex-bridge.bat</code>을 실행하면 <b>자동으로 찾아</b> 아래에 나타납니다. 안 나타나면 검은 창의 연결 주소를 직접 넣으세요. 수강생 요청은 연결된 PC(계정)들에 나뉘고, 한 PC가 꺼지거나 사용량이 다 차면 다른 PC로 옮겨집니다.</p>
+      <div class="cx-setlist" id="cxSetList"></div>
+      <form class="cx-setadd" id="cxSetAdd"><input id="cxSetUrl" placeholder="https://….trycloudflare.com" autocomplete="off"><button type="submit">추가</button></form>
+      <label class="cx-setcode">입장 코드 <input id="cxSetCode" autocomplete="off"></label>
+      <div class="cx-join" id="cxJoinBox" hidden>
+        <div class="cx-qr" id="cxQR"></div>
+        <div class="cx-joinr"><b>수강생 참가 링크</b><p>이 QR을 찍거나 링크를 단톡방에 보내 주세요. 들어오면 연결 주소와 입장 코드가 자동으로 설정됩니다.</p>
+          <div class="cx-joinrow"><input id="cxJoin" readonly><button type="button" id="cxJoinCopy">복사</button></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="cx-drop" id="cxDrop">놓으면 작업 폴더(workspace)에 올라갑니다</div>
+  <!-- 모션·게임·앱 예시 -->
+  <div class="guide-pop" id="guide13" hidden>
+    <div class="guide-in s-solo2 ex-in" role="dialog" aria-label="예시 둘러보기: 모션 · 게임 · 앱">
+      <div class="guide-head"><span class="pill">세 번째 사례 · 예시</span><h3>이런 것도 만들 수 있어요</h3><button type="button" class="guide-x" data-guide="guide13" aria-label="닫기">✕</button></div>
+      <div class="guide-cards">
+        <div class="sv-card ex-card">
+          <div class="sv-h"><img class="ex-ic" src="assets/img/ic-motion.png" alt="">모션</div>
+          <a class="ex-thumbs" href="https://claude.ai/artifact/FQujuvHWNdTh3f7FmLafz4" target="_blank" rel="noopener" title="참고 사이트 열기">
+            <img src="assets/img/motion-01.jpg" alt=""><img src="assets/img/motion-02.jpg" alt=""><img src="assets/img/motion-03.jpg" alt=""><img src="assets/img/motion-05.jpg" alt="">
+          </a>
+          <ul class="sv-li"><li>관련 MCP <b>HyperFrames</b><br><small>HTML로 만든 화면을 mp4 영상으로</small></li></ul>
+          <div class="ex-links">
+            <a class="sv-link ghost" href="https://github.com/heygen-com/hyperframes" target="_blank" rel="noopener">HyperFrames 깃허브 ↗</a>
+            <a class="sv-link" href="https://claude.ai/artifact/FQujuvHWNdTh3f7FmLafz4" target="_blank" rel="noopener">참고 사이트 열기 ↗</a>
+          </div>
+        </div>
+        <div class="sv-card ex-card">
+          <div class="sv-h"><img class="ex-ic" src="assets/img/ic-game.png" alt="">게임</div>
+          <div class="ex-apps">
+            <a class="ex-app" href="https://gw1.kr/아름다운우리말" target="_blank" rel="noopener"><img src="assets/img/app-malkkot.png" alt=""><b>말꽃 두루마리</b><small>gw1.kr/아름다운우리말</small></a>
+            <a class="ex-app" href="https://gw1.kr/개천절교육" target="_blank" rel="noopener"><img src="assets/img/app-gaecheon.png" alt=""><b>개천: 하늘이 열리다</b><small>gw1.kr/개천절교육</small></a>
+          </div>
+          <ul class="sv-li"><li>아름다운 우리말 · 개천절 교육</li><li>아이콘을 눌러 바로 해 보기</li></ul>
+        </div>
+        <div class="sv-card ex-card">
+          <div class="sv-h"><img class="ex-ic" src="assets/img/ic-webapp.png" alt="">앱</div>
+          <div class="ex-apps one">
+            <a class="ex-app" href="https://classroom-production-6d15.up.railway.app/?role=student" target="_blank" rel="noopener"><img src="assets/img/app-classroom.png" alt=""><b>3학년 2반 실시간 보드</b><small>학생용으로 열기</small></a>
+          </div>
+          <ul class="sv-li"><li>학생 태블릿과 교사용 화면을 <b>실시간</b>으로 연결</li></ul>
+          <a class="sv-link" href="https://classroom-production-6d15.up.railway.app/?role=student" target="_blank" rel="noopener">학생으로 들어가기 ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="hud">
+  <button id="hudPrev" aria-label="이전">◀</button>
+  <span id="hudNum">1 / 15</span>
+  <button id="hudNext" aria-label="다음">▶</button>
+  <button id="hudGrid" aria-label="전체 보기">☰</button>
+  <button data-full aria-label="전체 화면">⛶</button>
+  <button id="hudLive" aria-label="강사 모드" title="강사 모드 (L)">🎤</button>
+  <button id="hudInstall" aria-label="앱으로 설치" hidden>⤓ 앱 설치</button>
+</div>
+<div id="overview"><h3>슬라이드 이동 <small style="font-size:15px;color:#C9D3EE;font-weight:500">(O 키 · Esc 닫기)</small></h3><div class="grid" id="ovGrid"></div></div>
+
+<script src="js/deck.js?v=202610231029"></script>
+<script>
+  // PWA: 오프라인 대비 저장 + 홈 화면(앱) 설치
+  if ('serviceWorker' in navigator && location.protocol === 'https:') addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  (function () {
+    var btn = document.getElementById('hudInstall'), ev = null;
+    addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); ev = e; btn.hidden = false; });
+    btn.addEventListener('click', function () { if (!ev) return; ev.prompt(); ev.userChoice.finally(function () { ev = null; btn.hidden = true; }); });
+    addEventListener('appinstalled', function () { btn.hidden = true; });
+  })();
+</script>
+<script src="js/codex.js?v=202610231029"></script>
+<script src="js/chatgpt-plan.js?v=202610231029"></script>
+<script src="js/chatgpt.js?v=202610231029"></script>
+<script src="js/live-key.js?v=202610231029"></script>
+<script src="js/live.js?v=202610231029"></script>
+<script src="js/identity.js?v=202610231029"></script>
+<script src="js/opinion.js?v=202610231029"></script>
+<script>
+  // QR: 표지(gw1.kr/미동초연수) · 7.5 각자 해 보기(실습 안내)
+  (function () {
+    var QRS = [['coverQR', 'https://gw1.kr/%EB%AF%B8%EB%8F%99%EC%B4%88%EC%97%B0%EC%88%98', 176], ['soloQR', 'https://midong-edutech.vercel.app/practice/', 300]];
+    var s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+    s.onload = function () { QRS.forEach(function (q) { var el = document.getElementById(q[0]); if (el) new QRCode(el, { text: q[1], width: q[2], height: q[2], correctLevel: QRCode.CorrectLevel.M }); }); };
+    document.head.appendChild(s);
+  })();
+</script>
+</body>
+</html>

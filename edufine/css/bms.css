@@ -1,0 +1,68 @@
+/* 문서관리 목록 화면(작업 영역 안쪽). 값은 실제 화면의 계산된 스타일을 따랐다. */
+.bms { padding: 10px; min-width: 1000px; font: 13px '맑은고딕', 'Malgun Gothic', Arial, sans-serif; color: #555; background: #fff; position: relative; }
+.bms ul { margin: 0; padding: 0; list-style: none; }
+.bms .LblockButton { position: relative; height: 22px; margin: 0 0 5px; text-align: right; white-space: nowrap; }
+.bms .LblockButton ul { display: inline-block; height: 22px; }
+.bms .LblockButton li { display: inline-block; height: 22px; vertical-align: top; margin-left: 4px; position: relative; }
+.bms a.Lbtn, .bms a.Lbtn5 { display: inline-block; position: relative; height: 22px; padding: 0 10px; border: 1px solid #3c6b05; border-radius: 2px; background: #3f8606; color: #fff; font: 700 12px/20px '맑은고딕', 'Malgun Gothic', sans-serif; text-align: center; white-space: nowrap; vertical-align: bottom; }
+.bms a.Lbtn:hover { background: #4d9c0c; }
+.bms a.Lbtn5 { background: #1a517a; }
+.bms a.Lbtn.popup svg { margin-left: 1px; margin-top: -1px; }
+.bms a.Lbtn.popup span { padding-right: 5.5px; }
+.bms li.bar { width: 1px; height: 22px; background: #d6d6d6; margin: 0 2px 0 6px; }
+.bms .LblockSearch { position: relative; margin: 10px 0 0; }
+.bms .corner_RoundBox01 { position: relative; margin: 0 0 20px; padding: 6px 15px 4px; background: #eff7e0; border: 1px solid #3f8606; }
+.bms .LblockSearch table { width: 100%; border-collapse: collapse; }
+.bms .LblockSearch th { height: 29px; padding: 0 10px 0 0; font-weight: 700; color: #555; text-align: right; white-space: nowrap; }
+.bms .LblockSearch td { height: 29px; padding: 0 20px 0 0; white-space: nowrap; text-align: left; }
+.bms input.Ltext { height: 22px; padding: 0 5px; border: 1px solid #c5c5c5; background: #fff; font: 13px/16px 'Malgun Gothic', sans-serif; color: #000; vertical-align: middle; outline: none; user-select: text; }
+.bms input.Ltext:focus { border-color: #2c85bf; }
+.bms input.Lcal { width: 112px; padding-right: 22px; }
+.bms a.LcalPosition { position: relative; left: -25px; top: -1px; margin-right: -10px; line-height: 0; }
+.bms select { height: 22px; width: 75px; padding: 1px 20px 1px 5px; border: 1px solid #c5c5c5; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='6'%3E%3Cpath d='M4 0h9L8.5 6z' fill='%232c85bf'/%3E%3C/svg%3E") no-repeat 100% 50%; font: 13px/16px 'Malgun Gothic', sans-serif; color: #000; vertical-align: middle; -webkit-appearance: none; appearance: none; outline: none; margin-left: 4px; }
+.bms .ibtn { display: inline-block; width: 24px; height: 24px; margin-left: 4px; border: 1px solid #b9cfe2; border-radius: 2px; background: #fff; text-align: center; line-height: 20px; vertical-align: middle; cursor: pointer; }
+.bms .searchBtn { position: absolute; right: 5px; bottom: 7px; cursor: pointer; }
+.bms .unfold { display: inline-block; height: 20px; padding: 0 5px 0 4px; border: 1px solid #b5b5b5; border-radius: 2px; background: linear-gradient(to top, #efefef, #fff); line-height: 17px; }
+.bms .unfold b { font-size: 11px; color: #0c629b; letter-spacing: -1px; margin-left: 3px; }
+.bms a.imgbutton { display: inline-block; width: 34px; height: 22px; margin: 0 0 0 6.5px; border: 1px solid #aaa; border-radius: 2px; background: linear-gradient(to top, #efefef, #fff); text-align: center; line-height: 17px; vertical-align: top; }
+.bms .LblockListTable { position: relative; margin: 10px 0; padding: 0 0 20px; }
+.bms #tbList, .bms table.tbList { width: 100%; border-collapse: collapse; table-layout: fixed; border-top: 1px solid #59595b; border-left: 1px solid #9fa0a3; border-right: 1px solid #9fa0a3; }
+.bms .tbList thead th { height: 34px; padding: 7px 5px 9px; background: #59595b; color: #fff; font: 700 12px/14px 'Malgun Gothic', sans-serif; text-align: center; vertical-align: middle; white-space: nowrap; overflow: hidden; border-left: 1px solid #d3d4d8; }
+.bms .tbList thead th:first-child { border-left: 0; }
+.bms .tbList thead th a { color: #fff; }
+.bms .tbList thead th svg { margin-left: 3px; margin-top: -2px; }
+.bms .tbList tbody td { padding: 7px 5px 6px; font: 13px/14px dotum, '돋움', sans-serif; color: #000; text-align: center; vertical-align: middle; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-bottom: 1px solid #d3d4d8; border-left: 1px solid #d3d4d8; height: 31px; }
+.bms .tbList tbody td:first-child { border-left: 0; }
+.bms .tbList tbody tr:hover td { background: #f5faea; }
+.bms .tbList tbody td.tl { text-align: left; }
+.bms .tbList tbody td.wrap { white-space: normal; word-break: break-all; }
+.bms .tbList tbody td.none { height: 30px; }
+.bms a.ellipsisTitle { color: #3f8508; }
+.bms a.ellipsisTitle:hover { text-decoration: underline; }
+.bms td.st svg { margin-right: 1px; }
+.bms td.st .pub { margin-left: 2px; }
+.bms td .ra { margin-right: 5px; margin-top: -2px; }
+.bms .chk { display: inline-block; width: 13px; height: 13px; border: 1px solid #767676; border-radius: 2px; background: #fff; vertical-align: middle; cursor: pointer; position: relative; }
+.bms th .chk { border-color: #fff; border-radius: 0; }
+.bms .chk.on:after { content: ''; position: absolute; left: 3px; top: 0; width: 4px; height: 8px; border: solid #2c6fbb; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.bms .pageNum { position: relative; height: 32px; margin: 0 0 30px; background: #c9dced; border: 1px solid #9fa0a3; }
+.bms .TotalNum { position: absolute; left: 8px; top: 5px; font: 700 13px 'Malgun Gothic', sans-serif; color: #000; letter-spacing: -1px; }
+.bms .pageNum_count { color: #25649e; }
+.bms .pageNum_page { position: absolute; right: 0; top: 4px; font: 700 13px 'Malgun Gothic', sans-serif; color: #555; letter-spacing: -1px; }
+.bms .pageNum_page select { margin-left: 8px; }
+.bms .pageNum ul.pg { text-align: center; padding-top: 6px; height: 30px; }
+.bms .pageNum ul.pg li { display: inline-block; width: 20px; height: 20px; vertical-align: middle; text-align: center; font: 700 13px/20px '맑은 고딕', 'Malgun Gothic', sans-serif; }
+.bms .pageNum ul.pg li a { display: block; color: #555; }
+.bms .pageNum ul.pg li.cur { background: #2c85bf; color: #fff; }
+.bms .layer_bubble { position: absolute; top: 28px; z-index: 30; min-width: 110px; padding: 8px 14px 6px 10px; background: #fff; border: 1px solid #3f8606; box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.25); text-align: left; display: none; }
+.bms .layer_bubble a { display: block; height: 21px; line-height: 21px; font-size: 12px; color: #333; padding-left: 9px; position: relative; white-space: nowrap; }
+.bms .layer_bubble a:before { content: ''; position: absolute; left: 0; top: 8px; border: 3px solid transparent; border-left: 4px solid #3f8606; }
+.bms .layer_bubble a:hover { color: #3f8606; text-decoration: underline; }
+/* 문서정보(아래 패널) */
+.bms .docInfo { margin: -10px 0 30px; border: 1px solid #b4b6ba; border-bottom: 0; }
+.bms .docInfo table { width: 100%; border-collapse: collapse; }
+.bms .docInfo th { width: 12%; background: #eef7df; font-weight: 700; text-align: right; padding: 4px 8px 3px; border-bottom: 1px solid #b4b6ba; border-right: 1px solid #b4b6ba; white-space: nowrap; }
+.bms .docInfo td { padding: 3px 8px; border-bottom: 1px solid #b4b6ba; border-right: 1px solid #b4b6ba; color: #333; text-align: left; }
+.bms .docInfo td:last-child { border-right: 0; }
+.bms .docInfo h4 { margin: 0; padding: 6px 10px; background: #59595b; color: #fff; font-size: 12px; }
+.bms .docInfo h4 a { float: right; color: #fff; }

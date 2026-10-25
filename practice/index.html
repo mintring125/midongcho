@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>가상 나이스 AI 실습</title>
+<link rel="icon" href="../assets/img/char-wrist.png">
+<style>
+  @font-face { font-family: 'Paperlogy'; font-weight: 500; src: url(../assets/fonts/Paperlogy-5Medium.ttf); }
+  @font-face { font-family: 'Paperlogy'; font-weight: 700; src: url(../assets/fonts/Paperlogy-7Bold.ttf); }
+  @font-face { font-family: 'Paperlogy'; font-weight: 800; src: url(../assets/fonts/Paperlogy-8ExtraBold.ttf); }
+  :root { --navy: #1F2547; --ink: #1A1F36; --muted: #4E586C; --yellow: #FFD23F; --card: #F2F4FA; --line: #D5DBE8; --blue: #2457D6; --green: #0B8A5F; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fff; color: var(--ink); font-family: 'Paperlogy', 'Malgun Gothic', sans-serif; line-height: 1.6; word-break: keep-all; }
+  header { background: var(--navy); color: #fff; padding: 36px 20px 30px; }
+  .in { max-width: 860px; margin: 0 auto; }
+  .pill { display: inline-block; background: var(--yellow); color: var(--ink); font-weight: 700; border-radius: 20px; padding: 4px 16px; font-size: 15px; }
+  h1 { font-size: clamp(28px, 6vw, 40px); margin: 12px 0 6px; line-height: 1.25; }
+  header p { margin: 0; color: #C9D3EE; font-size: 17px; }
+  header img { float: right; height: 150px; margin: -10px 0 0 12px; }
+  main { padding: 26px 20px 60px; }
+  section { background: var(--card); border-radius: 18px; padding: 22px 22px 20px; margin-bottom: 18px; }
+  h2 { font-size: 21px; margin: 0 0 10px; display: flex; align-items: center; gap: 10px; }
+  h2 b { flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-size: 17px; }
+  ul { margin: 6px 0 0; padding-left: 20px; }
+  li { margin: 4px 0; }
+  a { color: var(--blue); font-weight: 700; }
+  .links { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-top: 12px; }
+  .links a { display: block; text-decoration: none; background: #fff; border: 1.5px solid var(--line); border-radius: 14px; padding: 12px 16px; color: var(--ink); }
+  .links a small { display: block; color: var(--muted); font-weight: 500; font-size: 13px; word-break: break-all; }
+  .prompt { position: relative; background: #fff; border: 1.5px solid var(--line); border-radius: 14px; padding: 16px 16px 56px; margin-top: 12px; white-space: pre-wrap; font-size: 15.5px; line-height: 1.7; }
+  .prompt .copy { position: absolute; right: 12px; bottom: 12px; border: 0; border-radius: 10px; background: var(--ink); color: #fff; font: 700 15px 'Paperlogy', sans-serif; padding: 9px 16px; cursor: pointer; }
+  .prompt .copy.done { background: var(--green); }
+  .tag { display: inline-block; font-size: 13px; font-weight: 700; border-radius: 8px; padding: 2px 9px; margin-right: 6px; }
+  .tag.a { background: #E6EEFF; color: var(--blue); } .tag.b { background: #FFF3C4; color: #8A6100; }
+  .warn { background: #FFF6D1; }
+  .muted { color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<header><div class="in">
+  <img src="../assets/img/char-wrist.png" alt="">
+  <span class="pill">첫 번째 사례 · 각자 해 보기</span>
+  <h1>가상 나이스,<br>AI에게 입력 맡기기</h1>
+  <p>브라우저 에이전트가 평가계획 문서를 읽고, 가상 나이스에 성취기준을 대신 입력합니다.</p>
+</div></header>
+
+<main><div class="in">
+  <section>
+    <h2><b>1</b>에이전트 열기</h2>
+    아래 중 쓸 수 있는 것 하나를 고릅니다.
+    <ul>
+      <li><b>ChatGPT 에이전트 모드</b> — ChatGPT 입력창의 <b>＋ → 에이전트 모드</b>. 클라우드의 브라우저가 대신 조작합니다. (유료 요금제)</li>
+      <li><b>Claude in Chrome</b> — 크롬 확장 프로그램을 켜고 옆 창에 요청합니다. 내 크롬을 직접 조작합니다.</li>
+      <li>그 밖에 웹페이지를 조작하는 AI 에이전트라면 무엇이든 됩니다.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><b>2</b>프롬프트 붙여 넣기</h2>
+    <span class="tag a">기본</span>신규 성취기준 4건 입력
+    <div class="prompt" id="p1">연수용 가상 나이스에 평가계획을 입력해 줘.
+
+1. 평가계획 문서를 읽어: https://midong-edutech.vercel.app/practice/plan.html
+2. 가상 나이스 평가계획(안)관리 화면을 열어: https://midong-edutech.vercel.app/neis/?open=plan
+3. 학년도 2026, 학기 2, 학년 5, 교과(목) 국어로 [조회]해.
+4. 문서에서 비고가 ‘신규’인 성취기준 4건을 [+] 버튼으로 한 행씩 추가하고 영역명·성취기준·평가요소를 문서와 똑같이 넣어. 정렬순서는 1.
+5. 이미 있는 행은 건드리지 말고, 다 넣으면 [저장]을 눌러. 확인 창이 뜨면 [확인].
+6. 끝나면 화면에 성취기준이 모두 몇 건인지 알려 줘.<button class="copy" data-for="p1">복사</button></div>
+
+    <p style="margin-top:16px"><span class="tag b">도전</span>평가기준(3단계)까지 입력</p>
+    <div class="prompt" id="p2">이어서 같은 화면 위쪽의 [성취기준(평가기준)관리]를 눌러.
+방금 넣은 신규 성취기준 4건을 하나씩 선택하고, [단계선택]에서 3단계를 고른 뒤 문서 ‘다. 성취기준별 평가기준’의 잘함·보통·노력요함 문장을 평가결과 칸에 넣고 [저장]해 줘.<button class="copy" data-for="p2">복사</button></div>
+  </section>
+
+  <section>
+    <h2><b>3</b>결과 확인</h2>
+    <div class="links">
+      <a href="plan.html" target="_blank" rel="noopener">평가계획 문서 (가상)<small>midong-edutech.vercel.app/practice/plan.html</small></a>
+      <a href="../neis/?open=plan" target="_blank" rel="noopener">가상 나이스 · 평가계획(안)관리<small>midong-edutech.vercel.app/neis/?open=plan</small></a>
+    </div>
+    <p class="muted" style="margin-top:12px">입력한 내용은 <b>그 브라우저 안에만</b> 저장됩니다. ChatGPT 에이전트는 클라우드 브라우저에 저장되므로 에이전트 화면에서 확인하고, Claude in Chrome은 내 크롬에서 바로 확인할 수 있습니다. 처음부터 다시 하려면 가상 나이스 왼쪽 ⚙(설정) → 연수 자료 초기화.</p>
+  </section>
+
+  <section class="warn">
+    <h2 style="font-size:18px">⚠ 실제 나이스에서는</h2>
+    <ul class="muted" style="font-size:15px">
+      <li>실제 나이스는 EVPN·인증서 로그인이 필요해 클라우드 에이전트가 들어갈 수 없습니다. 내 PC에서 도는 에이전트(Computer Use)를 씁니다.</li>
+      <li>학생 개인정보가 있는 화면은 AI에게 맡기기 전에 학교 지침을 먼저 확인하세요. 저장 전에는 꼭 사람이 확인합니다.</li>
+    </ul>
+  </section>
+</div></main>
+<script>
+  document.addEventListener('click', async e => {
+    const b = e.target.closest('.copy'); if (!b) return;
+    const box = document.getElementById(b.dataset.for).cloneNode(true); box.querySelector('.copy').remove();
+    const text = box.textContent.trim();
+    try { await navigator.clipboard.writeText(text); } catch { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+    b.textContent = '복사됨'; b.classList.add('done'); setTimeout(() => { b.textContent = '복사'; b.classList.remove('done'); }, 1500);
+  });
+</script>
+</body>
+</html>
