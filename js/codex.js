@@ -201,8 +201,6 @@
     const runT = busy && cur();   // 작업 중에는 실제로 실행한 엔진(모델을 적으면 브리지가 바꿀 수 있다)
     statusEl.querySelector('span').textContent = busy ? `${runT && runT.engine ? ENG[runT.engine] : nameOf(shown)} 작업 중` : on.length ? `연결됨 · PC ${on.length}대`
       : !code ? '입장 코드를 넣어 주세요' : otherCode ? `입장 코드가 달라요 (PC ${otherCode}대 있음)` : Date.now() < discPause ? 'PC 찾기 잠시 쉬는 중 · 3분 뒤 다시' : `${ENG[engine]} 연결 안 됨 · 켜진 PC 없음`;
-    const ev = shown && engsOf(shown)[runEng(shown)];
-    $('cxModel').textContent = ev && ev.version || ENG[engine].toLowerCase();
     $('cxBrandName').textContent = shown ? nameOf(shown) : ENG[engine];
     $('cxEng').querySelectorAll('[data-e]').forEach(b => {
       const e = b.dataset.e, n = allPCs().filter(u => has(u, e)).length;
