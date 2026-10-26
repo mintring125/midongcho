@@ -164,10 +164,33 @@
     const best = list.filter(u => load_(u) - min < 0.01);
     return best[Math.floor(Math.random() * best.length)];
   }
+  // 내 PC 정하기: 자리(seats)가 덜 찬 PC부터 /join 으로 자리를 잡는다(브리지가 정원을 지켜 PC 2대·8명이면 4명씩).
+  // 모든 PC가 다 찼으면 가장 덜 찬 PC에 자리를 더 만들어 들어간다. 예전 브리지(/join 없음)는 그냥 내 PC로 정한다.
+  let claiming = null;
+  function claim(exclude) {
+    if (claiming) return claiming;
+    claiming = (async () => {
+      const fill = u => { const i = stat[u].info; return (i.members || 0) / (i.seats || i.capacity || 1); };
+      const c = allPCs().filter(u => usable(u) && engOK(u) && !(exclude || []).includes(u + '|' + runEng(u)))
+        .sort((x, y) => fill(x) - fill(y) || (stat[x].info.running || 0) - (stat[y].info.running || 0) || Math.random() - 0.5);
+      for (const over of [false, true]) {
+        for (const u of over ? c.slice(0, 1) : c) {
+          try {
+            const r = await fetchT(u + '/join', { method: 'POST', headers: hdr(over ? { 'X-CX-Overflow': '1' } : {}) }, 6000);
+            const j = await r.json().catch(() => ({}));
+            if (r.ok || r.status === 404) { if (j.members != null) stat[u].info.members = j.members; home = u; save('cx.home', home); return u; }
+            if (r.status === 429 && j.members != null) stat[u].info.members = j.members;
+          } catch { /* 그 PC는 건너뛴다 */ }
+        }
+      }
+      return null;
+    })().finally(() => { claiming = null; renderStatus(); });
+    return claiming;
+  }
   function ensureHome() {
     if (home && allPCs().includes(home) && usable(home) && engOK(home)) return home;
-    const h = pick(); if (h) { home = h; save('cx.home', home); }
-    return h;
+    claim();   // 자리는 뒤에서 잡고, 그동안은 여유 있는 PC를 쓴다(내 PC로 정하지는 않음)
+    return pick();
   }
   function renderStatus() {
     const on = allPCs().filter(u => stat[u] && stat[u].ok);
@@ -197,7 +220,7 @@
     files = []; renderStatus(); refreshFiles();
   });
   let pollT;
-  function poll(force) { clearTimeout(pollT); if (!root.classList.contains('active')) return; healthAll(force === true).finally(() => { pollT = setTimeout(poll, anyOnline() ? 10000 : 4000); if (anyOnline() && !files.length) refreshFiles(); }); }
+  function poll(force) { clearTimeout(pollT); if (!root.classList.contains('active')) return; healthAll(force === true).finally(() => { if (code && anyOnline() && !(home && allPCs().includes(home) && usable(home) && engOK(home))) claim(); pollT = setTimeout(poll, anyOnline() ? 10000 : 4000); if (anyOnline() && !files.length) refreshFiles(); }); }
   document.addEventListener('slidechange', e => { if (e.detail.el === root) poll(); });
 
   // ---------- 스레드 ----------
@@ -472,8 +495,8 @@
         let target = fresh(t.bridge) ? t.bridge : null;
         let moved = false;
         if (!target) {
-          target = fresh(home) ? home : pick(tried);
-          if (!target) { await healthAll(); target = pick(tried); }
+          target = fresh(home) ? home : (await claim(tried)) || pick(tried);
+          if (!target) { await healthAll(); target = (await claim(tried)) || pick(tried); }
           if (!target) throw new Error(tried.length ? '연결된 모든 PC가 꺼져 있거나 사용량이 다 찼습니다.' : 'AI 브리지에 연결할 수 있는 PC가 없습니다.');
         }
         const eng = runEng(target);
@@ -730,7 +753,7 @@
   function renderSettings() {
     $('cxSetList').innerHTML = allPCs().map(u => {
       const s = stat[u], i = (s && s.info) || {};
-      const st = !s ? '확인 중' : !s.ok ? '<b class="bad">꺼짐</b>' : !usable(u) ? '<b class="bad">사용량 초과</b>' : `<b class="ok">연결됨</b> · 실행 ${i.running || 0}/${i.capacity || '?'} · 참가 ${i.members || 0}명`;
+      const st = !s ? '확인 중' : !s.ok ? '<b class="bad">꺼짐</b>' : !usable(u) ? '<b class="bad">사용량 초과</b>' : `<b class="ok">연결됨</b> · 실행 ${i.running || 0}/${i.capacity || '?'} · 참가 ${i.members || 0}${i.seats ? '/' + i.seats : ''}명`;
       const auto = found.includes(u) && !pool.includes(u);
       const eg = s && s.ok ? Object.keys(engsOf(u)).map(e => ` <em class="cx-engtag ${e}${has(u, e) ? '' : ' x'}">${ENG[e] || esc(e)}</em>`).join('') : '';
       return `<div class="cx-setrow"><div><b>${esc(labelOf(u))}${eg}${auto ? ' <em class="cx-auto">자동</em>' : ''}</b><small>${esc(u)}</small></div><span>${st}</span>${auto ? '' : `<button type="button" data-rm="${esc(u)}" title="빼기">✕</button>`}</div>`;

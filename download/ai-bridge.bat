@@ -126,6 +126,8 @@ exit /b 0
 //  - 수강생(브라우저)마다 세션 키가 있고, 세션마다 workspace/<세션> 폴더를 따로 쓴다.
 //  - 동시에 config.maxConcurrent 개까지(두 엔진 합쳐서) 돌린다. 꽉 차면 429로 답해 브라우저가 다른 PC로 보낸다.
 //  - 엔진이 사용량 한도에 걸리면 그 엔진만 '사용량 초과'로 표시해 브라우저가 다른 PC(다른 계정)나 다른 엔진으로 옮긴다.
+//  - mixdog CLI(https://github.com/tribgames/mixdog)가 깔려 있고 계정이 로그인되어 있으면 Claude·Codex 요청을 mixdog 로 돌린다.
+//    이 PC의 mixdog 에 로그인한 계정(Claude 여러 개·ChatGPT 여러 개)을 수강생마다 하나씩, 겹치지 않게 나눠 준다.
 //  - config.tunnel 이 true 이고 cloudflared 가 있으면 Cloudflare 임시 터널(https)을 열어 수강생 기기에서 접속하게 한다.
 //
 //   GET  /health                       상태(용량·실행 수·사용량 초과 여부)
@@ -133,6 +135,7 @@ exit /b 0
 //   GET  /ws/<세션>/<경로>[?dl=1]      작업 폴더 파일 보기(미리보기 iframe) · dl=1 이면 내려받기
 //   GET  /zip/<세션>                   작업 폴더 전체를 zip 으로 내려받기
 //   PUT  /upload?name=파일             파일 올리기
+//   POST /join                         자리 잡기(PC당 config.seats 명, 기본 maxConcurrent) — 다 찼으면 429 seats-full
 //   POST /run   {prompt, engine?, threadId?, images?[]}  → {jobId}
 //   GET  /job/<id>?from=n              작업 이벤트 이어 받기 → {events, next, done}
 //   POST /stop  {jobId}                작업 중지
@@ -173,6 +176,7 @@ const WORKSPACE = path.resolve(HERE, cfg.workspace || 'workspace');
 const ORIGINS = new Set(cfg.origins || []);
 const CODE = String(process.env.CX_CODE || cfg.accessCode || '').trim();   // 공개용 bat은 실행할 때 입력받은 코드를 CX_CODE로 넘긴다
 const MAX_RUN = Math.max(1, Number(cfg.maxConcurrent) || 4);
+const SEATS = Math.max(1, Number(cfg.seats) || MAX_RUN);   // 이 PC에 자리 잡을 수 있는 수강생 수 — PC 2대·8명이면 4명씩
 const LABEL = String(process.env.LABEL || cfg.label || os.hostname());
 const NAME = { claude: 'Claude', codex: 'Codex' };
 const SITE_URL = String(cfg.siteUrl || 'https://midong-edutech.vercel.app').replace(/\/$/, '');
@@ -232,9 +236,39 @@ function claudeEnv() {
   return env;
 }
 
+// ---- mixdog CLI: 계정 여러 개를 수강생마다 나눠 쓰기 ----------------------------------------------
+// config.mixdog 의 claude/codex 에 provider·model·effort 를 적는다(false 면 쓰지 않음). 기본은 Sonnet 5.5 medium · GPT-6.1 Sol high.
+// mixdog 가 없거나 그 provider 에 로그인한 계정이 없으면 원래 CLI(claude·codex)를 쓴다.
+const MX = cfg.mixdog === false ? null : {
+  claude: { provider: 'anthropic-oauth', model: 'claude-sonnet-5-5', effort: 'medium', ...((cfg.mixdog || {}).claude || {}) },
+  codex: { provider: 'openai-oauth', model: 'gpt-6.1-sol', effort: 'high', ...((cfg.mixdog || {}).codex || {}) },
+};
+// provider → [자격 증명 파일을 직접 지정하는 환경 변수, 기본 계정(default)의 파일 이름]
+const MX_CRED = { 'anthropic-oauth': ['ANTHROPIC_OAUTH_CREDENTIALS_PATH', 'anthropic-oauth-credentials.json'], 'openai-oauth': ['OPENAI_OAUTH_CREDENTIALS_PATH', 'openai-oauth.json'], 'grok-oauth': ['GROK_OAUTH_CREDENTIALS_PATH', 'grok-oauth.json'] };
+function findMixdog() {
+  if (process.env.MIXDOG_CLI && fs.existsSync(process.env.MIXDOG_CLI)) return process.env.MIXDOG_CLI;
+  const roots = [process.env.APPDATA && path.join(process.env.APPDATA, 'npm', 'node_modules')];
+  try { roots.push(execSync('npm root -g', { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()); } catch { /* npm 없음 */ }
+  return roots.filter(Boolean).map(r => path.join(r, 'mixdog', 'src', 'cli.mjs')).find(p => fs.existsSync(p)) || null;
+}
+const MIX_CLI = MX && findMixdog();
+const MIX_DATA = process.env.MIXDOG_DATA_DIR || path.join(process.env.MIXDOG_HOME || path.join(os.homedir(), '.mixdog'), 'data');
+let MIX_VER = ''; try { MIX_VER = JSON.parse(fs.readFileSync(path.join(path.dirname(MIX_CLI), '..', 'package.json'), 'utf8')).version; } catch { /* 없음 */ }
+// 로그인해 둔 계정 목록(요청마다 다시 읽어, 브리지를 켠 뒤 로그인한 계정도 쓴다) — 이름표(Account 1…)와 자격 증명 파일 위치만 본다
+function mixAccounts(provider) {
+  const cred = MX_CRED[provider];
+  if (!MIX_CLI || !cred) return [];
+  let pool = null; try { pool = JSON.parse(fs.readFileSync(path.join(MIX_DATA, 'provider-accounts.json'), 'utf8')).providers[provider]; } catch { /* 계정 목록 없음 */ }
+  const rows = pool && Array.isArray(pool.accounts) && pool.accounts.length ? pool.accounts : [{ id: 'default', label: 'Account 1' }];
+  return rows.map(a => ({ id: String(a.id), label: String(a.label || a.id), file: a.id === 'default' ? path.join(MIX_DATA, cred[1]) : path.join(MIX_DATA, 'provider-accounts', provider, `${a.id}.json`) }))
+    .filter(a => /^(default|[0-9a-f-]{36})$/.test(a.id) && fs.existsSync(a.file));
+}
+const viaMix = e => !!(MX && MX[e] && mixAccounts(MX[e].provider).length);
+
 // 이 PC에서 쓸 수 있는 엔진 → 버전 (config.engines 로 하나만 쓰게 할 수도 있다)
 const VERSION = {}, CODEX_ISOLATE = [];
 for (const e of (Array.isArray(cfg.engines) && cfg.engines.length ? cfg.engines : ['claude', 'codex'])) {
+  if (viaMix(e)) { VERSION[e] = `mixdog ${MIX_VER} · ${MX[e].model} · 계정 ${mixAccounts(MX[e].provider).length}개`; continue; }
   try {
     if (e === 'claude') { const [cmd, a, o] = claudeCmd(['--version']); VERSION.claude = 'Claude Code ' + execFileSync(cmd, a, { ...o, encoding: 'utf8', env: claudeEnv(), stdio: ['ignore', 'pipe', 'ignore'] }).trim().replace(/\s*\(Claude Code\)\s*/i, ''); }
     if (e === 'codex') {
@@ -268,7 +302,7 @@ function cors(req, res) {
     res.setHeader('Access-Control-Allow-Origin', o);
     res.setHeader('Vary', 'Origin');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-CX-Session, X-CX-Code, X-CX-Name, X-CX-Admin');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-CX-Session, X-CX-Code, X-CX-Name, X-CX-Admin, X-CX-Overflow');
     res.setHeader('Access-Control-Allow-Private-Network', 'true');
     res.setHeader('Access-Control-Max-Age', '600');
   }
@@ -409,19 +443,28 @@ function zipDir(base, list) {
 // ---- 사용량 초과 감지 ----------------------------------------------------------
 // Codex가 계정 사용량 한도(5시간·주간)에 걸리면 그 동안은 '사용량 초과'로 알려 브라우저가 다른 PC로 보낸다.
 const limitedUntil = { claude: 0, codex: 0 };
+const acctLimited = new Map();   // mixdog 계정 'provider|id' → 풀리는 시각 (그 계정만 쉬고, 같은 PC의 다른 계정은 계속 쓴다)
 const LIMIT_RE = /usage limit|rate.?limit|quota|too many requests|\b429\b|limit reached|hit your .{0,20}limit|try again (in|at)/i;
-function noteLimit(text, eng) {
+function noteLimit(text, eng, acct) {
   if (!text || !LIMIT_RE.test(text)) return false;
   const m = /try again in\s+(?:(\d+)\s*h(?:ours?)?)?\s*(?:(\d+)\s*m(?:in(?:utes?)?)?)?/i.exec(text);
   let ms = m && (m[1] || m[2]) ? ((+m[1] || 0) * 60 + (+m[2] || 0)) * 60000 : 30 * 60000;
   // Claude 는 'You've hit your weekly limit · resets 10pm (Asia/Seoul)' 처럼 풀리는 시각을 알려 준다 → 그때까지 보내지 않는다
   const rs = /resets\s+(?:at\s+)?(\d{1,2})(?::(\d{2}))?\s*(am|pm)/i.exec(text);
   if (rs) { const d = new Date(); d.setHours((+rs[1] % 12) + (/pm/i.test(rs[3]) ? 12 : 0), +rs[2] || 0, 0, 0); if (d <= Date.now()) d.setDate(d.getDate() + 1); ms = d - Date.now(); }
+  if (acct) {
+    acctLimited.set(acct.key, Date.now() + Math.max(ms, 5 * 60000));
+    console.log(`[사용량] mixdog ${acct.label}(${NAME[eng]}) 한도에 걸렸습니다. ${new Date(acctLimited.get(acct.key)).toLocaleTimeString('ko-KR')}까지 다른 계정을 씁니다.`);
+    return true;
+  }
   limitedUntil[eng] = Date.now() + Math.max(ms, 5 * 60000);
   console.log(`[사용량] ${NAME[eng]} 한도에 걸렸습니다. ${new Date(limitedUntil[eng]).toLocaleTimeString('ko-KR')}까지 다른 PC로 보냅니다.`);
   return true;
 }
-const isLimited = eng => Date.now() < limitedUntil[eng];
+const acctFree = (provider, a) => !(Date.now() < (acctLimited.get(`${provider}|${a.id}`) || 0));
+// mixdog 로 돌리는 엔진은 계정이 모두 쉬는 중일 때만 '사용량 초과'
+const isLimited = eng => viaMix(eng) ? !mixAccounts(MX[eng].provider).some(a => acctFree(MX[eng].provider, a)) : Date.now() < limitedUntil[eng];
+const limitEnd = eng => viaMix(eng) ? Math.min(...mixAccounts(MX[eng].provider).map(a => acctLimited.get(`${MX[eng].provider}|${a.id}`) || 0)) : limitedUntil[eng];
 
 // ---- Codex / Claude 작업 ------------------------------------------------------------------
 const jobs = new Map();          // jobId → {sid, events[], done, child}
@@ -468,7 +511,10 @@ async function isAdmin(req) {
   const key = await adminKey(); if (!key) return false;
   try { return crypto.verify('sha256', Buffer.from(`cx-admin|${t}`), { key, dsaEncoding: 'ieee-p1363' }, Buffer.from(sig, 'base64')); } catch { return false; }
 }
-const members = () => { const t = Date.now() - 3 * 3600000; return [...lastSeen.values()].filter(v => v > t).length; };
+// 자리: /join 이나 실행으로 이 PC에 자리 잡은 수강생(3시간 동안 유지). 파일 목록만 본 사람은 세지 않는다
+const seated = new Map();   // 세션 → 마지막으로 쓴 시각
+const seatedNow = () => { const t = Date.now() - 3 * 3600000; return [...seated].filter(([, v]) => v > t).map(([k]) => k); };
+const members = () => seatedNow().length;
 
 function killTree(child) {
   if (!child || child.exitCode !== null) return;
@@ -536,6 +582,77 @@ function claudeToCodex(dir) {
   };
 }
 
+// ---- mixdog: 수강생 ↔ 계정 배정 ----
+// 수강생(세션)마다 계정 하나를 정해 두고 계속 쓴다. 새로 정할 때는 지금 참가 중인 사람이 가장 적게 쓰는 계정,
+// 그다음 지금 실행 중인 작업이 적은 계정 — 4명이면 계정 4개에 한 명씩. 사용량이 다 찬 계정은 풀릴 때까지 건너뛴다.
+const ACCTS = path.join(WORKSPACE, '.accounts.json');
+const acctOf = new Map();   // '세션|provider' → 계정 id
+try { for (const [k, v] of Object.entries(JSON.parse(fs.readFileSync(ACCTS, 'utf8')))) acctOf.set(k, v); } catch { /* 처음 */ }
+const saveAccts = () => { try { fs.writeFileSync(ACCTS, JSON.stringify(Object.fromEntries(acctOf))); } catch { /* noop */ } };
+function pickAccount(sid, provider, skip = [], reassign = false) {
+  const list = mixAccounts(provider).filter(a => acctFree(provider, a) && !skip.includes(a.id));
+  if (!list.length) return null;
+  const key = `${sid}|${provider}`;
+  const mine = !reassign && list.find(a => a.id === acctOf.get(key));
+  if (mine) return mine;
+  const active = new Set(seatedNow().filter(x => x !== sid));
+  const users = id => [...acctOf].filter(([k, v]) => v === id && k.endsWith('|' + provider) && active.has(k.split('|')[0])).length;
+  const runs = id => [...jobs.values()].filter(j => !j.done && j.account === `${provider}|${id}`).length;
+  list.sort((x, y) => users(x.id) - users(y.id) || runs(x.id) - runs(y.id));
+  acctOf.set(key, list[0].id); saveAccts();
+  return list[0];
+}
+function mixEnv(provider, acc) {
+  const env = { ...process.env, HYPERFRAMES_SKIP_SKILLS: '1' };
+  for (const [name] of Object.values(MX_CRED)) delete env[name];
+  env[MX_CRED[provider][0]] = acc.file;   // 이 실행은 이 계정의 자격 증명 파일만 쓴다
+  return env;
+}
+// mixdog exec 는 한 번 묻고 끝나 이어 쓰기가 없다 → 브리지가 스레드마다 앞선 대화(요청·답)를 기억해 다음 요청에 붙인다
+const MIXT = path.join(WORKSPACE, '.mixthreads.json');
+const mixThreads = new Map();   // 스레드 id → [{u, a}]
+try { for (const [k, v] of Object.entries(JSON.parse(fs.readFileSync(MIXT, 'utf8')))) mixThreads.set(k, v); } catch { /* 처음 */ }
+const saveMixThreads = () => { try { fs.writeFileSync(MIXT, JSON.stringify(Object.fromEntries(mixThreads))); } catch { /* noop */ } };
+
+// ---- mixdog exec --json → Codex 이벤트 모양 ----
+//  thread.started(브리지가 정한 스레드 id로) · agent_message · reasoning 은 그대로, tool_call 은 도구 이름으로
+//  shell → command_execution · edit/write/patch → file_change · read/grep/glob/find/list → command_execution(읽기·검색·찾기) · web_search · 그 밖 → mcp_tool_call
+function mixToCodex(dir, tid, resumed) {
+  let started = !!resumed;
+  const rel = p => { const r = path.relative(dir, path.resolve(dir, String(p || ''))); return r && !r.startsWith('..') ? r.split(path.sep).join('/') : String(p || ''); };
+  const str = v => typeof v === 'string' ? v : v == null ? '' : JSON.stringify(v);
+  function tool(ev) {
+    const it = ev.item, n = String(it.name || '').toLowerCase(), a = it.arguments && typeof it.arguments === 'object' ? it.arguments : {};
+    const done = ev.type === 'item.completed', ok = !/fail|error|denied/i.test(String(it.status || ''));
+    const out = str(it.output), f = a.file_path || a.path || a.file || '';
+    if (/^(edit|write|create|apply_patch|patch|multi_?edit|str_replace)/.test(n)) {   // 파일 변경은 성공했을 때만 보여 준다
+      if (!done) return [];
+      const files = f ? [f] : [...String(a.patch || a.input || a.diff || '').matchAll(/\*\*\* (?:Add|Update) File: (.+)/g)].map(m => m[1].trim());
+      if (!ok) return [{ type: 'item.completed', item: { id: it.id, type: 'command_execution', command: `쓰기 ${files.map(rel).join(', ')}`, exit_code: 1, aggregated_output: out.slice(-2000) } }];
+      return files.length ? [{ type: 'item.completed', item: { id: it.id, type: 'file_change', changes: files.map(x => ({ path: path.resolve(dir, x), kind: 'update' })), status: 'completed' } }] : [];
+    }
+    let item;
+    if (/web_?search|search_web/.test(n)) item = { id: it.id, type: 'web_search', query: a.query || a.q || '' };
+    else if (/shell|bash|powershell|exec|command|terminal/.test(n)) item = { id: it.id, type: 'command_execution', command: Array.isArray(a.command) ? a.command.join(' ') : String(a.command || a.cmd || a.script || n) };
+    else if (/^read|view|open/.test(n)) item = { id: it.id, type: 'command_execution', command: `읽기 ${rel(f)}` };
+    else if (/grep|search/.test(n)) item = { id: it.id, type: 'command_execution', command: `검색 "${a.pattern || a.query || ''}"${f ? ' ' + rel(f) : ''}` };
+    else if (/glob|find|list|ls/.test(n)) item = { id: it.id, type: 'command_execution', command: `찾기 ${a.pattern || a.glob || rel(f) || ''}` };
+    else item = { id: it.id, type: 'mcp_tool_call', server: 'mixdog', tool: it.name || '' };
+    if (!done) return item.type === 'web_search' ? [] : [{ type: 'item.started', item: { ...item, status: 'in_progress' } }];
+    if (item.type === 'command_execution') Object.assign(item, { status: ok ? 'completed' : 'failed', exit_code: ok ? 0 : 1, aggregated_output: out.slice(-6000) });
+    else if (item.type === 'mcp_tool_call') item.status = ok ? 'completed' : 'failed';
+    return [{ type: 'item.completed', item }];
+  }
+  return ev => {
+    if (ev.type === 'thread.started') { if (started) return []; started = true; return [{ type: 'thread.started', thread_id: tid, model: ev.session && ev.session.model }]; }
+    if (ev.type === 'item.completed' && ev.item && (ev.item.type === 'agent_message' || ev.item.type === 'reasoning')) return [{ type: 'item.completed', item: { id: ev.item.id, type: ev.item.type, text: ev.item.text || '' } }];
+    if ((ev.type === 'item.started' || ev.item && ev.type === 'item.completed') && ev.item && ev.item.type === 'tool_call') return tool(ev);
+    if (ev.type === 'turn.completed') return [{ type: 'turn.completed', usage: ev.usage }];
+    if (ev.type === 'turn.failed') return [{ type: 'turn.failed', error: { message: (ev.error && ev.error.message) || '실행에 실패했습니다.' } }];
+    return [];
+  };
+}
+
 // 프롬프트에 모델을 적으면(예: 「sonnet으로」, 「haiku 모델로」, 「모델은 opus」, 「GPT-5로」) 그 요청은 그 모델로 실행한다.
 // 「하이쿠 시를 써 줘」처럼 낱말만 나온 경우는 무시하도록 「~으로/로」나 「모델」이 붙은 경우만 본다.
 const VER = '(?:[\\s-]*[\\d.]+)*', TAIL = '\\s*(?:모델)?\\s*(?:으로|로)(?![가-힣])';
@@ -567,8 +684,25 @@ async function startRun(req, res, sid) {
   const dir = sessionDir(sid);
   const images = (Array.isArray(body.images) ? body.images : []).map(r => inside(dir, String(r))).filter(p => p && fs.existsSync(p));
 
-  let cmd, a, o, input = prompt, conv = null;
-  if (ENGINE === 'claude') {
+  let cmd, a, o, input = prompt, conv = null, mix = null;
+  if (viaMix(ENGINE)) {
+    // mixdog: 이 수강생에게 정해 둔 계정 하나로 실행한다(그 계정 사용량이 다 차면 아래 close 에서 같은 PC의 다른 계정으로 바로 다시 실행)
+    const mx = MX[ENGINE], acc = pickAccount(sid, mx.provider);
+    if (!acc) return json(res, 503, { error: 'limited', engine: ENGINE, message: `${LABEL}의 ${AGENT} 계정 사용량이 모두 찼습니다.`, limitedUntil: limitEnd(ENGINE) });
+    if (threadId && !mixThreads.has(threadId)) threadId = null;   // 예전 CLI 스레드는 이어 쓸 수 없다
+    const tid = threadId || crypto.randomUUID();
+    const head = `[작업 규칙] 먼저 작업 폴더의 AGENTS.md 를 읽고 따른다. 파일은 작업 폴더(${dir}) 안에만 만든다. 확인 질문 없이 끝까지 해낸다.`;
+    const ask = input + (images.length ? `\n\n(첨부 이미지: ${images.map(x => path.relative(dir, x)).join(', ')} — read 도구로 열어 본다)` : '');
+    let hist = (mixThreads.get(tid) || []).map(h => `사용자: ${h.u}\nAI: ${h.a}`).join('\n\n');
+    hist = hist.slice(-Math.max(0, 26000 - head.length - ask.length));   // 윈도 명령줄 길이(32K) 안에 들어가게 오래된 대화부터 줄인다
+    const message = [head, hist && `[앞선 대화]\n${hist}`, `[이번 요청]\n${ask}`].filter(Boolean).join('\n\n');
+    mix = { provider: mx.provider, acc, tid, tried: [acc.id], held: null };
+    cmd = process.execPath;
+    a = [MIX_CLI, 'exec', '--provider', mx.provider, '--model', MODEL || mx.model, ...(mx.effort ? ['--effort', mx.effort] : []), '--json', '--web-search', message];
+    o = { env: mixEnv(mx.provider, acc) };
+    conv = mixToCodex(dir, tid);
+    input = '';
+  } else if (ENGINE === 'claude') {
     // Claude Code: 이 세션 폴더 안에서만 파일을 쓰고(acceptEdits), 정해 둔 명령만 실행한다. 강사 PC의 개인 설정·스킬·MCP는 쓰지 않는다.
     const agents = path.join(WORKSPACE, 'AGENTS.md');
     const sys = agentsText() + `- 작업 폴더: ${dir}\n- 첨부 이미지는 Read 도구로 열어 본다.`;
@@ -594,59 +728,87 @@ async function startRun(req, res, sid) {
     o = { ...o, env: codexEnv() };
   }
 
-  const child = spawn(cmd, a, { env: { ...process.env, HYPERFRAMES_SKIP_SKILLS: '1' }, ...o, cwd: dir, windowsHide: true });
   const id = crypto.randomBytes(9).toString('hex');
-  const job = { sid, events: [], done: false, child, at: Date.now() };
+  const job = { sid, events: [], done: false, child: null, at: Date.now(), account: mix ? `${mix.provider}|${mix.acc.id}` : '' };
   jobs.set(id, job);
-  const turn = { id, sid, name: names.get(sid) || '', engine: ENGINE, model: MODEL || '', label: LABEL, prompt: shown, at: job.at, status: 'running', answer: '', files: [] };
+  const turn = { id, sid, name: names.get(sid) || '', engine: ENGINE, model: MODEL || '', label: LABEL, via: mix ? 'mixdog' : '', account: mix ? mix.acc.label : '', prompt: shown, at: job.at, status: 'running', answer: '', files: [] };
   turns.push(turn); if (turns.length > 2000) turns.splice(0, turns.length - 2000);
   // 시작할 때 이미 있던 영상 크기 — 끝나고 같은 크기의 새 영상이 생기면 복사본(참고 영상)으로 본다
   const preVideo = new Set(); try { for (const f of listFiles(dir)) if (IS_VIDEO.test(f.path)) preVideo.add(f.size); } catch { /* noop */ }
   const push = ev => job.events.push(ev);
-  push({ type: 'bridge.started', resume: !!threadId, label: LABEL, engine: ENGINE, model: MODEL });
-  console.log(`[${new Date().toLocaleTimeString('ko-KR')}] ${sid.slice(0, 6)} ${threadId ? '이어서' : '새 대화'} (실행 ${running()}/${MAX_RUN}) ${prompt.slice(0, 40).replace(/\s+/g, ' ')}`);
+  push({ type: 'bridge.started', resume: !!threadId, label: LABEL, engine: ENGINE, model: MODEL || (mix ? MX[ENGINE].model : null), account: mix ? mix.acc.label : undefined });
+  console.log(`[${new Date().toLocaleTimeString('ko-KR')}] ${sid.slice(0, 6)} ${threadId ? '이어서' : '새 대화'}${mix ? ` [mixdog ${mix.acc.label}]` : ''} (실행 ${running()}/${MAX_RUN}) ${prompt.slice(0, 40).replace(/\s+/g, ' ')}`);
 
-  child.stdin.on('error', () => { /* 바로 꺼진 경우 */ });
-  child.stdin.end(input, 'utf8');
-  let buf = '', errTail = '';
-  const onEvent = ev => {
+  const onEvent = (ev, release) => {
+    // mixdog: 계정 사용량 초과로 끝난 실패는 잠시 붙잡아 둔다 → close 에서 다른 계정으로 다시 실행하면 화면에 실패가 보이지 않는다
+    if (mix && !release && ev.type === 'turn.failed' && LIMIT_RE.test((ev.error && ev.error.message) || '')) { mix.held = ev; return; }
     if (ev.type === 'thread.started' && ev.thread_id) { threadOwner.set(ev.thread_id, owner); saveOwners(); }
     if (ev.type === 'item.completed' && ev.item?.type === 'agent_message') turn.answer = String(ev.item.text || '').slice(0, 8000);
     if (ev.type === 'item.completed' && ev.item?.type === 'file_change') for (const c of ev.item.changes || []) { const r = path.relative(dir, path.resolve(dir, String(c.path || ''))).split(path.sep).join('/'); if (r && !r.startsWith('..') && !turn.files.includes(r)) turn.files.push(r); }
     if (ev.type === 'turn.completed') turn.status = 'done';
     if (ev.type === 'turn.failed') turn.status = 'failed';
     const msg = ev.message || ev.error?.message || ev.item?.message || '';
-    if ((ev.type === 'error' || ev.type === 'turn.failed' || ev.item?.type === 'error') && noteLimit(msg, ENGINE)) push({ type: 'bridge.limited', engine: ENGINE, message: msg, label: LABEL });
+    if (!mix && (ev.type === 'error' || ev.type === 'turn.failed' || ev.item?.type === 'error') && noteLimit(msg, ENGINE)) push({ type: 'bridge.limited', engine: ENGINE, message: msg, label: LABEL });
     push(ev);
   };
-  const onLine = line => {
-    let ev; try { ev = JSON.parse(line); } catch { ev = { type: 'bridge.stdout', text: line }; }
-    if (conv) conv(ev).forEach(onEvent); else onEvent(ev);
+  const launch = () => {
+    const child = spawn(cmd, a, { env: { ...process.env, HYPERFRAMES_SKIP_SKILLS: '1' }, ...o, cwd: dir, windowsHide: true });
+    job.child = child;
+    child.stdin.on('error', () => { /* 바로 꺼진 경우 */ });
+    child.stdin.end(input, 'utf8');
+    let buf = '', errTail = '';
+    const onLine = line => {
+      let ev; try { ev = JSON.parse(line); } catch { ev = { type: 'bridge.stdout', text: line }; }
+      if (mix && ev.type === 'bridge.stdout') return;   // mixdog 의 안내 줄은 화면에 내지 않는다
+      if (conv) conv(ev).forEach(x => onEvent(x)); else onEvent(ev);
+    };
+    child.stdout.setEncoding('utf8');
+    child.stdout.on('data', d => { buf += d; let i; while ((i = buf.indexOf('\n')) >= 0) { const l = buf.slice(0, i).trim(); buf = buf.slice(i + 1); if (l) onLine(l); } });
+    child.stderr.setEncoding('utf8');
+    child.stderr.on('data', d => { errTail = (errTail + d).slice(-4000); });
+    child.on('error', e => push({ type: 'bridge.error', message: `${AGENT}를 실행하지 못했습니다: ` + e.message }));
+    child.on('close', code => {
+      if (buf.trim()) onLine(buf.trim());
+      const tail = errTail.split('\n').filter(l => l.trim() && !/Reading additional input from stdin|ExperimentalWarning|trace-warnings|^\[[a-z-]+\]/.test(l)).slice(-8).join('\n');
+      if (mix && !job.stopped && (mix.held || (code && turn.status === 'running' && LIMIT_RE.test(tail)))) {
+        // 이 계정의 사용량이 다 찼다 → 쉬게 하고, 같은 PC에서 쉬지 않는 다른 계정으로 바로 다시 실행한다
+        const why = (mix.held && mix.held.error && mix.held.error.message) || tail;
+        noteLimit(why, ENGINE, { key: `${mix.provider}|${mix.acc.id}`, label: mix.acc.label });
+        const next = pickAccount(sid, mix.provider, mix.tried, true);
+        if (next) {
+          console.log(`[mixdog] ${sid.slice(0, 6)} ${mix.acc.label} 사용량 초과 → ${next.label}(으)로 다시 실행`);
+          mix.tried.push(next.id); mix.acc = next; mix.held = null; turn.account = next.label; job.account = `${mix.provider}|${next.id}`;
+          o = { ...o, env: mixEnv(mix.provider, next) };
+          conv = mixToCodex(dir, mix.tid, true);
+          return launch();
+        }
+        if (mix.held) { onEvent(mix.held, true); mix.held = null; }
+        push({ type: 'bridge.limited', engine: ENGINE, message: why, label: LABEL });   // 이 PC의 계정이 모두 쉬는 중 → 브라우저가 다른 PC로
+      } else if (mix && mix.held) { onEvent(mix.held, true); mix.held = null; }
+      if (!mix && code && noteLimit(tail, ENGINE)) push({ type: 'bridge.limited', engine: ENGINE, message: tail, label: LABEL });
+      push({ type: 'bridge.exit', code, stderr: code ? tail : '' });
+      job.done = true; job.child = null; job.endedAt = Date.now();
+      if (turn.status === 'running') turn.status = code === null || job.stopped ? 'stopped' : 'failed';
+      if (mix && turn.status === 'done') {   // 다음 요청에 붙일 대화 기억(스레드마다 최근 12번)
+        const h = (mixThreads.get(mix.tid) || []).concat({ u: shown.slice(0, 2000), a: turn.answer.slice(0, 3000) }).slice(-12);
+        mixThreads.delete(mix.tid); mixThreads.set(mix.tid, h);
+        while (mixThreads.size > 500) mixThreads.delete(mixThreads.keys().next().value);
+        saveMixThreads();
+      }
+      // 명령(ffmpeg·node·HyperFrames 렌더 등)으로 만든 mp4·pptx 같은 결과물도 기록한다 — 이 작업 동안 새로 생기거나 바뀐 파일
+      try {
+        const rank = f => /\.(mp4|webm|pptx|pdf|hwpx|docx|xlsx)$/i.test(f) ? 0 : /\.html?$/i.test(f) ? 1 : /\.(png|jpe?g|gif|webp|svg|mp3|wav)$/i.test(f) ? 2 : 3;
+        const up = uploads.get(sid) || new Set();
+        // 결과물만: 수강생이 올린 파일, 이미 있던 영상의 복사본, 이름이 참고·원본인 영상은 뺀다
+        const notResult = f => up.has(f.path) || (IS_VIDEO.test(f.path) && (preVideo.has(f.size) || isRefName(f.path)));
+        const all = listFiles(dir), byPath = new Map(all.map(f => [f.path, f]));
+        const fresh = all.filter(f => f.mtime >= job.at - 1000 && !notResult(f)).map(f => f.path);
+        turn.files = [...new Set([...turn.files.filter(p => !byPath.has(p) || !notResult(byPath.get(p))), ...fresh])].sort((a, b) => rank(a) - rank(b)).slice(0, 40);
+      } catch { /* 폴더를 못 읽으면 기록된 것만 */ }
+      turn.endedAt = job.endedAt; saveTurn(turn);
+    });
   };
-  child.stdout.setEncoding('utf8');
-  child.stdout.on('data', d => { buf += d; let i; while ((i = buf.indexOf('\n')) >= 0) { const l = buf.slice(0, i).trim(); buf = buf.slice(i + 1); if (l) onLine(l); } });
-  child.stderr.setEncoding('utf8');
-  child.stderr.on('data', d => { errTail = (errTail + d).slice(-4000); });
-  child.on('error', e => push({ type: 'bridge.error', message: `${AGENT}를 실행하지 못했습니다: ` + e.message }));
-  child.on('close', code => {
-    if (buf.trim()) onLine(buf.trim());
-    const tail = errTail.split('\n').filter(l => l.trim() && !/Reading additional input from stdin/.test(l)).slice(-8).join('\n');
-    if (code && noteLimit(tail, ENGINE)) push({ type: 'bridge.limited', engine: ENGINE, message: tail, label: LABEL });
-    push({ type: 'bridge.exit', code, stderr: code ? tail : '' });
-    job.done = true; job.child = null; job.endedAt = Date.now();
-    if (turn.status === 'running') turn.status = code === null || job.stopped ? 'stopped' : 'failed';
-    // 명령(ffmpeg·node·HyperFrames 렌더 등)으로 만든 mp4·pptx 같은 결과물도 기록한다 — 이 작업 동안 새로 생기거나 바뀐 파일
-    try {
-      const rank = f => /\.(mp4|webm|pptx|pdf|hwpx|docx|xlsx)$/i.test(f) ? 0 : /\.html?$/i.test(f) ? 1 : /\.(png|jpe?g|gif|webp|svg|mp3|wav)$/i.test(f) ? 2 : 3;
-      const up = uploads.get(sid) || new Set();
-      // 결과물만: 수강생이 올린 파일, 이미 있던 영상의 복사본, 이름이 참고·원본인 영상은 뺀다
-      const notResult = f => up.has(f.path) || (IS_VIDEO.test(f.path) && (preVideo.has(f.size) || isRefName(f.path)));
-      const all = listFiles(dir), byPath = new Map(all.map(f => [f.path, f]));
-      const fresh = all.filter(f => f.mtime >= job.at - 1000 && !notResult(f)).map(f => f.path);
-      turn.files = [...new Set([...turn.files.filter(p => !byPath.has(p) || !notResult(byPath.get(p))), ...fresh])].sort((a, b) => rank(a) - rank(b)).slice(0, 40);
-    } catch { /* 폴더를 못 읽으면 기록된 것만 */ }
-    turn.endedAt = job.endedAt; saveTurn(turn);
-  });
+  launch();
   json(res, 200, { jobId: id, label: LABEL, engine: ENGINE, model: MODEL });
 }
 
@@ -666,8 +828,8 @@ const server = http.createServer(async (req, res) => {
 
   try {
     if (req.method === 'GET' && route === '/health') {
-      const engines = Object.fromEntries(ENGINES.map(e => [e, { version: VERSION[e], limited: isLimited(e), limitedUntil: isLimited(e) ? limitedUntil[e] : 0 }]));
-      return json(res, 200, { ok: true, label: LABEL, engines, zip: true, engine: DEFAULT, codex: VERSION[DEFAULT] || null, capacity: MAX_RUN, running: running(), members: members(),
+      const engines = Object.fromEntries(ENGINES.map(e => [e, { version: VERSION[e], limited: isLimited(e), limitedUntil: isLimited(e) ? limitEnd(e) : 0, ...(viaMix(e) ? { via: 'mixdog', model: MX[e].model, accounts: mixAccounts(MX[e].provider).length } : {}) }]));
+      return json(res, 200, { ok: true, label: LABEL, engines, zip: true, engine: DEFAULT, codex: VERSION[DEFAULT] || null, capacity: MAX_RUN, running: running(), members: members(), seats: SEATS,
         limited: ENGINES.every(e => isLimited(e)), limitedUntil: 0, needsCode: !!CODE });
     }
     if (req.method === 'GET' && route.startsWith('/ws/')) {   // 미리보기: 경로에 세션 키가 들어 있어 남의 파일은 못 본다
@@ -689,7 +851,7 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { 'Content-Type': 'application/zip', 'Content-Length': zip.length, 'Cache-Control': 'no-store', ...attachment(`AI결과물-${new Date().toISOString().slice(0, 10)}.zip`) });
       return res.end(zip);
     }
-    const isApi = ['/files', '/upload', '/run', '/stop', '/delete', '/admin/turns', '/admin/delete'].includes(route) || route.startsWith('/job/');
+    const isApi = ['/files', '/join', '/upload', '/run', '/stop', '/delete', '/admin/turns', '/admin/delete'].includes(route) || route.startsWith('/job/');
     if (!isApi) {   // 발표 화면(../site)
       if (req.method !== 'GET') { res.writeHead(405); return res.end(); }
       let p = inside(SITE, decodeURIComponent(route).replace(/^\/+/, '') || 'index.html');
@@ -707,6 +869,7 @@ const server = http.createServer(async (req, res) => {
     const sid = String(req.headers['x-cx-session'] || '');
     if (!SID_RE.test(sid)) return json(res, 400, { error: 'session', message: '세션 정보가 없습니다.' });
     lastSeen.set(sid, Date.now());
+    if (seatedNow().includes(sid)) seated.set(sid, Date.now());   // 자리 잡은 사람은 쓰는 동안 자리 유지
     const nm = (() => { try { return decodeURIComponent(String(req.headers['x-cx-name'] || '')).slice(0, 40); } catch { return ''; } })();
     if (nm) names.set(sid, nm);
 
@@ -729,11 +892,18 @@ const server = http.createServer(async (req, res) => {
       if (fs.existsSync(dir)) for (const e of fs.readdirSync(dir)) { if (e === 'AGENTS.md') continue; try { fs.rmSync(path.join(dir, e), { recursive: true, force: true }); } catch { /* 열려 있는 파일 */ } }
       return json(res, 200, { ok: true, turns: before - turns.length });
     }
+    if (req.method === 'POST' && route === '/join') {   // 자리 잡기: 자리가 남았거나 이미 내 자리면 OK, 다 찼으면 429 → 브라우저가 다른 PC로
+      const mine = seatedNow().includes(sid), others = seatedNow().filter(x => x !== sid).length;
+      if (!mine && others >= SEATS && req.headers['x-cx-overflow'] !== '1') return json(res, 429, { error: 'seats-full', seats: SEATS, members: others, message: `${LABEL}의 자리(${SEATS}명)가 다 찼습니다.` });
+      seated.set(sid, Date.now());
+      return json(res, 200, { ok: true, label: LABEL, seats: SEATS, members: members() });
+    }
     if (req.method === 'GET' && route === '/files') {
       return json(res, 200, { files: listFiles(sessionDir(sid)).sort((x, y) => y.mtime - x.mtime) });
     }
     if (req.method === 'POST' && route === '/run') {
       if (!(req.headers['content-type'] || '').includes('application/json')) return json(res, 415, { error: 'bad', message: 'JSON만 받습니다.' });
+      seated.set(sid, Date.now());   // 실행한 사람은 이 PC에 자리 잡은 것으로 센다
       return startRun(req, res, sid);
     }
     if (req.method === 'GET' && route.startsWith('/job/')) {
@@ -860,10 +1030,11 @@ function startTunnel() {
 server.listen(PORT, '127.0.0.1', () => {
   console.log('');
   console.log(`  AI 브리지가 켜졌습니다. [${LABEL}]`);
-  console.log(`  Claude     ${VERSION.claude ? `${VERSION.claude} · 모델 ${CC.model || '기본'} · effort ${CC.effort || '기본'}` : '없음 — npm i -g @anthropic-ai/claude-code 후 claude auth login'}`);
-  console.log(`  Codex      ${VERSION.codex || '없음 — npm i -g @openai/codex 후 codex login'}`);
+  console.log(`  Claude     ${viaMix('claude') ? `${VERSION.claude} · effort ${MX.claude.effort}` : VERSION.claude ? `${VERSION.claude} · 모델 ${CC.model || '기본'} · effort ${CC.effort || '기본'}` : '없음 — npm i -g @anthropic-ai/claude-code 후 claude auth login'}`);
+  console.log(`  Codex      ${viaMix('codex') ? `${VERSION.codex} · effort ${MX.codex.effort}` : VERSION.codex || '없음 — npm i -g @openai/codex 후 codex login'}`);
   if (!ENGINES.length) console.log('  ※ 쓸 수 있는 AI가 없습니다. Claude Code 나 Codex CLI 를 설치해 주세요.');
-  console.log(`  동시 실행  최대 ${MAX_RUN}개`);
+  if (MX && !MIX_CLI) console.log('  ※ mixdog 가 없어 Claude·Codex CLI 를 그대로 씁니다. (npm i -g mixdog 후 mixdog 에서 계정 로그인)');
+  console.log(`  동시 실행  최대 ${MAX_RUN}개 · 자리 ${SEATS}명`);
   console.log(`  입장 코드  ${CODE || '(없음)'}`);
   console.log(`  작업 폴더  ${WORKSPACE}`);
   if (fs.existsSync(path.join(SITE, 'index.html'))) console.log(`  이 PC에서 발표 화면 열기  http://localhost:${PORT}/`);
@@ -892,6 +1063,19 @@ process.on('SIGTERM', shutdown);
   "label": "",
   "accessCode": "",
   "maxConcurrent": 4,
+  "seats": 4,
+  "mixdog": {
+    "claude": {
+      "provider": "anthropic-oauth",
+      "model": "claude-sonnet-5-5",
+      "effort": "medium"
+    },
+    "codex": {
+      "provider": "openai-oauth",
+      "model": "gpt-6.1-sol",
+      "effort": "high"
+    }
+  },
   "tunnel": true,
   "siteUrl": "https://midong-edutech.vercel.app",
   "discovery": "https://ntfy.sh/midong-cx-70402f1cb5f3ca16",
