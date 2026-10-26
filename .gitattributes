@@ -1,0 +1,2 @@
+# 윈도 배치 파일은 CRLF 그대로 저장한다 — LF로 바뀌면 cmd 가 goto 위치를 잘못 읽어 bat 이 깨진다
+*.bat -text
