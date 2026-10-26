@@ -477,3 +477,33 @@ html:not(.live-host) .host-only { display: none !important; }
 .ex-in .ex-apps.one .ex-app { width: 260px; }
 .ex-in .ex-apps.one .ex-app img { width: 200px; height: 200px; border-radius: 44px; }
 .ex-in .ex-card > .sv-link { margin-top: auto; }
+
+/* 13번 「무료로 만들기」: AI Studio → Gemini → Claude 네 단계 */
+.guide-in.fr-in { width: 1680px; height: 900px; }
+.fr-in .guide-cards { gap: 20px; }
+.fr-in .sv-card { width: 400px; height: 740px; padding: 22px 22px 20px; }
+.fr-in .sv-h { margin-bottom: 6px; }
+.fr-in .fr-where { font-size: 20px; font-weight: 700; color: var(--muted); margin: 0 0 10px; }
+.fr-in .sv-prompt .fr-where { color: rgba(255,255,255,.7); }
+.fr-in .fr-tool { align-self: flex-start; display: inline-flex; align-items: center; height: 44px; padding: 0 20px; border-radius: 22px; background: var(--blue); color: #fff; font-size: 19px; font-weight: 800; text-decoration: none; box-shadow: 0 6px 16px rgba(36,87,214,.22); }
+.fr-in .fr-tool:hover { filter: brightness(1.08); }
+.fr-in .sv-prompt .fr-tool { background: var(--yellow); color: var(--ink); box-shadow: none; }
+.fr-in .sv-li { margin-top: 16px; font-size: 21px; }
+.fr-in .sv-copy.light { font-size: 19px; line-height: 1.5; margin-top: 12px; }
+.fr-in .fr-steps { margin: 14px 0 0; padding-left: 26px; font-size: 19px; font-weight: 600; line-height: 1.4; }
+.fr-in .fr-steps li { margin-bottom: 4px; }
+.fr-in .fr-steps b { color: var(--blue); font-weight: 800; }
+.fr-in .fr-steps small { display: block; font-size: 16px; color: var(--muted); font-weight: 600; }
+.fr-in .fr-tones { display: flex; flex-direction: column; gap: 8px; }
+.fr-in .sv-copy.fr-tone { margin-top: 6px; font-size: 15.5px; line-height: 1.4; padding: 10px 14px 40px; font-family: var(--font); }
+.fr-in .sv-copy.fr-tone em { display: block; font-style: normal; font-weight: 800; color: var(--blue); font-size: 16px; margin-bottom: 2px; }
+.fr-in .sv-copy.fr-small { flex: none; font-size: 16px; padding: 10px 14px 40px; margin-top: 6px; }
+.fr-in .fr-tone .sv-copytag, .fr-in .fr-small .sv-copytag { font-size: 14px; bottom: 8px; right: 12px; }
+.fr-in .fr-keys { display: flex; gap: 10px; margin-top: 16px; }
+.fr-in .fr-keys span { flex: 1; background: #fff; border: 2px solid var(--line); border-radius: 14px; padding: 8px 12px; font-size: 16px; color: var(--muted); font-weight: 700; }
+.fr-in .fr-keys b { display: block; font-size: 26px; color: #D9673E; font-weight: 800; }
+.fr-in .fr-attach { margin: 16px 0 0; padding-left: 0; list-style: none; font-size: 20px; font-weight: 600; line-height: 1.5; }
+.fr-in .fr-attach b { color: var(--yellow); }
+.fr-in .sv-copy.fr-motion { flex: 1; margin-top: 12px; font-size: 16.5px; line-height: 1.55; padding: 16px 16px 50px; }
+.fr-in .sv-copy.light.tall { font-size: 24px; line-height: 1.55; font-weight: 600; }
+.fr-in .sv-copy.fr-motion { font-size: 18px; }

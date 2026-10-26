@@ -14,9 +14,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="AI 활용 연수">
 <link rel="preload" href="assets/fonts/Paperlogy-8ExtraBold.ttf" as="font" type="font/ttf" crossorigin>
-<link rel="stylesheet" href="css/deck.css?v=202610261430">
-<link rel="stylesheet" href="css/codex.css?v=202610261430">
-<link rel="stylesheet" href="css/chatgpt.css?v=202610261430">
+<link rel="stylesheet" href="css/deck.css?v=202610261441">
+<link rel="stylesheet" href="css/codex.css?v=202610261441">
+<link rel="stylesheet" href="css/chatgpt.css?v=202610261441">
 </head>
 <body>
 
@@ -202,7 +202,7 @@
 </div></div>
 
 <!-- 7 가상 나이스 (실제 화면) -->
-<section class="app" data-n="7" data-title="① 가상 나이스 실습" data-src="neis/?v=202610261430">
+<section class="app" data-n="7" data-title="① 가상 나이스 실습" data-src="neis/?v=202610261441">
   <div class="appbar">
     <span class="tag">첫 번째 사례 · 실습</span><h2>가상의 나이스 프로그램</h2><span class="sp"></span>
     <button class="abtn cg-btn" id="cgBtn" aria-pressed="false" title="ChatGPT 창 열기/닫기 (컴퓨터 사용 시연)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.2l7.6 4.4v8.8L12 20.8l-7.6-4.4V7.6z"/><path d="M12 3.2v8.8l7.6 4.4M12 12l-7.6 4.4"/></svg><span class="lbl"> ChatGPT</span></button>
@@ -291,7 +291,7 @@
 </section>
 
 <!-- 10 가상 에듀파인 (실제 화면) -->
-<section class="app" data-n="10" data-title="② 가상 에듀파인 실습" data-src="edufine/?v=202610261430">
+<section class="app" data-n="10" data-title="② 가상 에듀파인 실습" data-src="edufine/?v=202610261441">
   <div class="appbar">
     <span class="tag">두 번째 사례 · 실습</span><h2>가상의 에듀파인 프로그램</h2><span class="sp"></span>
     <button class="abtn cg-btn" id="cgBtn10" aria-pressed="false" title="ChatGPT 창 열기/닫기 (컴퓨터 사용 시연)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.2l7.6 4.4v8.8L12 20.8l-7.6-4.4V7.6z"/><path d="M12 3.2v8.8l7.6 4.4M12 12l-7.6 4.4"/></svg><span class="lbl"> ChatGPT</span></button>
@@ -410,6 +410,7 @@
   <div class="appbar">
     <span class="tag">세 번째 사례 · 실습</span><h2>Claude · Codex로 함께 만들기</h2><span class="sp"></span>
     <button class="abtn guide-btn" data-guide="guide13" aria-pressed="false" title="모션 · 게임 · 앱 예시 보기/닫기">✨<span class="lbl"> 예시</span></button>
+    <button class="abtn guide-btn" data-guide="guide13f" aria-pressed="false" title="무료 AI로 모션그래픽 만드는 순서 보기/닫기">🎬<span class="lbl"> 무료로 만들기</span></button>
     <a class="abtn" href="https://aistudio.google.com/prompts/new_chat" target="_blank" rel="noopener" title="Google AI Studio 새 채팅 열기 (새 탭)">◆<span class="lbl"> AI Studio</span></a>
     <a class="abtn" href="https://gemini.google.com/app?hl=ko" target="_blank" rel="noopener" title="Gemini 열기 (새 탭)">✦<span class="lbl"> Gemini</span></a>
     <a class="abtn" href="https://claude.ai/" target="_blank" rel="noopener" title="Claude 열기 (새 탭)">✳<span class="lbl"> Claude</span></a>
@@ -481,6 +482,50 @@
     </div>
   </div>
   <div class="cx-drop" id="cxDrop">놓으면 작업 폴더(workspace)에 올라갑니다</div>
+  <!-- 무료로 만들기: AI Studio(대본·목소리·자막) → Gemini(배경음악) → Claude(모션그래픽) -->
+  <div class="guide-pop" id="guide13f" hidden>
+    <div class="guide-in s-solo2 fr-in" role="dialog" aria-label="무료로 만들기: 대본·목소리·자막·배경음악·모션그래픽">
+      <div class="guide-head"><span class="pill">세 번째 사례 · 무료로 만들기</span><h3>무료 AI로 모션그래픽 만들기</h3><button type="button" class="guide-x" data-guide="guide13f" aria-label="닫기">✕</button></div>
+      <div class="guide-cards">
+        <div class="sv-card">
+          <div class="sv-h"><b>1</b>대본</div>
+          <div class="fr-where">Google AI Studio</div>
+          <a class="fr-tool" href="https://aistudio.google.com/prompts/new_chat" target="_blank" rel="noopener">AI Studio 열기 ↗</a>
+          <ul class="sv-li"><li>주제(<b>00</b>)를 바꿔 붙여 넣기</li></ul>
+          <button type="button" class="sv-p sv-copy light tall" data-copy="00에 대해 초등학생, 중학생에게 알려 주는 모션그래픽 영상을 만들려고 합니다. 30초 가량의 대본을 작성해 주세요." title="눌러서 복사">00에 대해 초등학생, 중학생에게 알려 주는 모션그래픽 영상을 만들려고 합니다. 30초 가량의 대본을 작성해 주세요.<span class="sv-copytag">📋 누르면 복사</span></button>
+        </div>
+        <div class="sv-card">
+          <div class="sv-h"><b>2</b>목소리·자막</div>
+          <div class="fr-where">Google AI Studio</div>
+          <a class="fr-tool" href="https://aistudio.google.com/prompts/new_chat" target="_blank" rel="noopener">AI Studio 열기 ↗</a>
+          <ol class="fr-steps">
+            <li><b>Audio</b> 모델에서 최신 TTS 선택<small>(3.8 Flash TTS)</small></li>
+            <li>톤 프롬프트로 목소리 정하기</li>
+          </ol>
+          <div class="fr-tones">
+            <button type="button" class="sv-p sv-copy light fr-tone" data-copy="Bright, sunny, welcoming morning greeting with a subtle vocal smile and crisp pacing" title="눌러서 복사"><em>밝은 톤</em>Bright, sunny, welcoming morning greeting with a subtle vocal smile and crisp pacing<span class="sv-copytag">📋 누르면 복사</span></button>
+            <button type="button" class="sv-p sv-copy light fr-tone" data-copy="Confident, efficient, and encouraging wrap-up with clear articulation" title="눌러서 복사"><em>힘 있는 톤</em>Confident, efficient, and encouraging wrap-up with clear articulation<span class="sv-copytag">📋 누르면 복사</span></button>
+          </div>
+          <ol class="fr-steps" start="3"><li><b>wav</b>를 Gemini 3.8 Flash에 붙여 넣어 <b>SRT</b> 받기</li></ol>
+          <button type="button" class="sv-p sv-copy light fr-small" data-copy="이 음성으로 SRT 자막을 만들어 주세요. 시간은 음성에 정확히 맞춰 주세요." title="눌러서 복사">이 음성으로 SRT 자막을 만들어 주세요. 시간은 음성에 정확히 맞춰 주세요.<span class="sv-copytag">📋 누르면 복사</span></button>
+        </div>
+        <div class="sv-card">
+          <div class="sv-h"><b>3</b>배경음악</div>
+          <div class="fr-where">Gemini · [음악 만들기]</div>
+          <a class="fr-tool" href="https://gemini.google.com/app?hl=ko" target="_blank" rel="noopener">Gemini 열기 ↗</a>
+          <div class="fr-keys"><span>길이 <b>짧게</b></span><span>형태 <b>보컬 없이</b></span></div>
+          <button type="button" class="sv-p sv-copy light tall" data-copy="00 설명 영상에 사용할 초등학생용, 흥미롭고 재미있는 피치카토 현악. 보컬 없이 짧게." title="눌러서 복사">00 설명 영상에 사용할 초등학생용, 흥미롭고 재미있는 피치카토 현악. 보컬 없이 짧게.<span class="sv-copytag">📋 누르면 복사</span></button>
+        </div>
+        <div class="sv-card sv-prompt">
+          <div class="sv-h"><b>4</b>모션그래픽</div>
+          <div class="fr-where">Claude</div>
+          <a class="fr-tool" href="https://claude.ai/" target="_blank" rel="noopener">Claude 열기 ↗</a>
+          <ul class="fr-attach"><li>📎 <b>wav</b> · <b>SRT</b> · <b>배경음악</b> 첨부</li><li>아래 프롬프트 붙여 넣기</li></ul>
+          <button type="button" class="sv-p sv-copy fr-motion" data-copy="00에 관한 30초 모션그래픽을 만들어줘.&#10;- 길이: 내레이션 +1초, 16:9&#10;- 형식: HTML 아티팩트 하나, GSAP 타임라인&#10;- 컨트롤: 재생·처음부터·진행 막대·녹화 모드&#10;- 싱크: gsap.ticker.lagSmoothing(0)으로 음성·자막에 맞춤&#10;- 글꼴: Black Han Sans(제목)·Noto Sans KR(본문)" title="눌러서 복사">00에 관한 30초 모션그래픽을 만들어줘.<br>- 길이: 내레이션 +1초, 16:9<br>- 형식: HTML 아티팩트 하나, GSAP 타임라인<br>- 컨트롤: 재생·처음부터·진행 막대·녹화 모드<br>- 싱크: gsap.ticker.lagSmoothing(0)으로 음성·자막에 맞춤<br>- 글꼴: Black Han Sans(제목)·Noto Sans KR(본문)<span class="sv-copytag">📋 누르면 복사</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- 모션·게임·앱 예시 -->
   <div class="guide-pop" id="guide13" hidden>
     <div class="guide-in s-solo2 ex-in" role="dialog" aria-label="예시 둘러보기: 모션 · 게임 · 앱">
@@ -529,7 +574,7 @@
 </div>
 <div id="overview"><h3>슬라이드 이동 <small style="font-size:15px;color:#C9D3EE;font-weight:500">(O 키 · Esc 닫기)</small></h3><div class="grid" id="ovGrid"></div></div>
 
-<script src="js/deck.js?v=202610261430"></script>
+<script src="js/deck.js?v=202610261441"></script>
 <script>
   // PWA: 오프라인 대비 저장 + 홈 화면(앱) 설치
   if ('serviceWorker' in navigator && location.protocol === 'https:') addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
@@ -540,13 +585,13 @@
     addEventListener('appinstalled', function () { btn.hidden = true; });
   })();
 </script>
-<script src="js/codex.js?v=202610261430"></script>
-<script src="js/chatgpt-plan.js?v=202610261430"></script>
-<script src="js/chatgpt.js?v=202610261430"></script>
-<script src="js/live-key.js?v=202610261430"></script>
-<script src="js/live.js?v=202610261430"></script>
-<script src="js/identity.js?v=202610261430"></script>
-<script src="js/opinion.js?v=202610261430"></script>
+<script src="js/codex.js?v=202610261441"></script>
+<script src="js/chatgpt-plan.js?v=202610261441"></script>
+<script src="js/chatgpt.js?v=202610261441"></script>
+<script src="js/live-key.js?v=202610261441"></script>
+<script src="js/live.js?v=202610261441"></script>
+<script src="js/identity.js?v=202610261441"></script>
+<script src="js/opinion.js?v=202610261441"></script>
 <script>
   // QR: 표지(gw1.kr/미동초연수) · 7.5 각자 해 보기(실습 안내)
   (function () {
