@@ -215,5 +215,3 @@
 .cx-gcard video { width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #111; border-radius: 8px; pointer-events: none; }
 .cx-gcard b { font-size: 14px; color: var(--cx-ink); }
 .cx-gcard small { font-size: 12px; color: var(--cx-mute); word-break: break-all; }
-.cx-refbtn { border: 0; cursor: pointer; font-family: inherit; }
-.cx-refbtn:hover { background: var(--cx-line); color: var(--cx-ink); }

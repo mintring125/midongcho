@@ -111,9 +111,6 @@
     } catch { add('참고 영상을 불러오지 못했습니다.', 'm-err'); }
   }
   document.addEventListener('codex-try', e => setTimeout(() => usePrompt(e.detail), 60));
-  // 입력창 아래 「자막 연습 영상」「스타일 참고 영상」: 누를 때만 그 영상을 올려 첨부한다
-  root.querySelector('.cx-cbar').addEventListener('click', e => { const b = e.target.closest('[data-ref]'); if (b) attachRef(b.dataset.ref); });
-
   // ---------- 연결 확인 · PC 고르기 ----------
   // ntfy.sh 는 같은 인터넷 주소에서 오는 요청 수를 제한한다(학교는 보통 모두가 주소 하나 → 금방 429).
   // 그래서 꼭 필요할 때만 읽는다: 슬라이드를 열 때 한 번(다른 탭이 5분 안에 읽었으면 그 결과를 같이 씀),
