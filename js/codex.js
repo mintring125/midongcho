@@ -733,6 +733,23 @@
     renderAttach(); refreshFiles(); persist();
   }
   $('cxUpload').addEventListener('change', e => { upload([...e.target.files]); e.target.value = ''; });
+  // ＋ 메뉴: 내 기기에서 고르기, 또는 발표 사이트에 준비해 둔 파일(누르면 내 작업 폴더에 올려 첨부)
+  const READY = [
+    { f: 'assets/ref/sub-ref.mp4', i: '🎞', d: '자막 연습 영상 (30초)' },
+    { f: 'assets/ref/style-ref.mp4', i: '🎨', d: '모션그래픽 스타일 참고 영상' },
+  ];
+  const plus = $('cxPlus'), plusMenu = $('cxPlusMenu');
+  plusMenu.innerHTML = `<button type="button" role="menuitem" data-pick="device">📂 내 기기에서 고르기</button><div class="h">준비된 파일</div>`
+    + READY.map(x => `<button type="button" role="menuitem" data-ready="${esc(x.f)}">${x.i} ${esc(x.f.split('/').pop())}<small>${esc(x.d)}</small></button>`).join('');
+  const plusOpen = on => { plusMenu.hidden = !on; plus.setAttribute('aria-expanded', on); };
+  plus.addEventListener('click', () => plusOpen(plusMenu.hidden));
+  plusMenu.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    plusOpen(false);
+    if (b.dataset.pick) $('cxUpload').click(); else attachRef(b.dataset.ready);
+  });
+  document.addEventListener('click', e => { if (!plusMenu.hidden && !e.target.closest('.cx-plus')) plusOpen(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !plusMenu.hidden) { plusOpen(false); plus.focus(); } });
   let dragN = 0;
   root.addEventListener('dragenter', e => { if (e.dataTransfer.types.includes('Files')) { dragN++; root.classList.add('dragging'); e.preventDefault(); } });
   root.addEventListener('dragover', e => { if (e.dataTransfer.types.includes('Files')) e.preventDefault(); });

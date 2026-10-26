@@ -14,9 +14,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="AI 활용 연수">
 <link rel="preload" href="assets/fonts/Paperlogy-8ExtraBold.ttf" as="font" type="font/ttf" crossorigin>
-<link rel="stylesheet" href="css/deck.css?v=202610261511">
-<link rel="stylesheet" href="css/codex.css?v=202610261511">
-<link rel="stylesheet" href="css/chatgpt.css?v=202610261511">
+<link rel="stylesheet" href="css/deck.css?v=202610261525">
+<link rel="stylesheet" href="css/codex.css?v=202610261525">
+<link rel="stylesheet" href="css/chatgpt.css?v=202610261525">
 </head>
 <body>
 
@@ -202,7 +202,7 @@
 </div></div>
 
 <!-- 7 가상 나이스 (실제 화면) -->
-<section class="app" data-n="7" data-title="① 가상 나이스 실습" data-src="neis/?v=202610261511">
+<section class="app" data-n="7" data-title="① 가상 나이스 실습" data-src="neis/?v=202610261525">
   <div class="appbar">
     <span class="tag">첫 번째 사례 · 실습</span><h2>가상의 나이스 프로그램</h2><span class="sp"></span>
     <button class="abtn cg-btn" id="cgBtn" aria-pressed="false" title="ChatGPT 창 열기/닫기 (컴퓨터 사용 시연)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.2l7.6 4.4v8.8L12 20.8l-7.6-4.4V7.6z"/><path d="M12 3.2v8.8l7.6 4.4M12 12l-7.6 4.4"/></svg><span class="lbl"> ChatGPT</span></button>
@@ -291,7 +291,7 @@
 </section>
 
 <!-- 10 가상 에듀파인 (실제 화면) -->
-<section class="app" data-n="10" data-title="② 가상 에듀파인 실습" data-src="edufine/?v=202610261511">
+<section class="app" data-n="10" data-title="② 가상 에듀파인 실습" data-src="edufine/?v=202610261525">
   <div class="appbar">
     <span class="tag">두 번째 사례 · 실습</span><h2>가상의 에듀파인 프로그램</h2><span class="sp"></span>
     <button class="abtn cg-btn" id="cgBtn10" aria-pressed="false" title="ChatGPT 창 열기/닫기 (컴퓨터 사용 시연)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.2l7.6 4.4v8.8L12 20.8l-7.6-4.4V7.6z"/><path d="M12 3.2v8.8l7.6 4.4M12 12l-7.6 4.4"/></svg><span class="lbl"> ChatGPT</span></button>
@@ -439,7 +439,11 @@
           <div class="cx-attach" id="cxAttach"></div>
           <textarea id="cxPrompt" rows="2" placeholder="무엇을 만들어 볼까요?  (Enter 보내기 · Shift+Enter 줄바꿈)"></textarea>
           <div class="cx-cbar">
-            <label class="cx-icbtn" title="파일 올리기">＋<input type="file" id="cxUpload" multiple hidden></label>
+            <div class="cx-plus">
+              <button type="button" class="cx-icbtn" id="cxPlus" aria-haspopup="menu" aria-expanded="false" title="파일 올리기">＋</button>
+              <div class="cx-plusmenu" id="cxPlusMenu" role="menu" hidden></div>
+              <input type="file" id="cxUpload" multiple hidden>
+            </div>
             <span class="cx-pill">📁 workspace</span>
             <span class="cx-pill">로컬에서 실행</span>
             <span class="sp"></span>
@@ -571,7 +575,7 @@
 </div>
 <div id="overview"><h3>슬라이드 이동 <small style="font-size:15px;color:#C9D3EE;font-weight:500">(O 키 · Esc 닫기)</small></h3><div class="grid" id="ovGrid"></div></div>
 
-<script src="js/deck.js?v=202610261511"></script>
+<script src="js/deck.js?v=202610261525"></script>
 <script>
   // PWA: 오프라인 대비 저장 + 홈 화면(앱) 설치
   if ('serviceWorker' in navigator && location.protocol === 'https:') addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
@@ -582,13 +586,13 @@
     addEventListener('appinstalled', function () { btn.hidden = true; });
   })();
 </script>
-<script src="js/codex.js?v=202610261511"></script>
-<script src="js/chatgpt-plan.js?v=202610261511"></script>
-<script src="js/chatgpt.js?v=202610261511"></script>
-<script src="js/live-key.js?v=202610261511"></script>
-<script src="js/live.js?v=202610261511"></script>
-<script src="js/identity.js?v=202610261511"></script>
-<script src="js/opinion.js?v=202610261511"></script>
+<script src="js/codex.js?v=202610261525"></script>
+<script src="js/chatgpt-plan.js?v=202610261525"></script>
+<script src="js/chatgpt.js?v=202610261525"></script>
+<script src="js/live-key.js?v=202610261525"></script>
+<script src="js/live.js?v=202610261525"></script>
+<script src="js/identity.js?v=202610261525"></script>
+<script src="js/opinion.js?v=202610261525"></script>
 <script>
   // QR: 표지(gw1.kr/미동초연수) · 7.5 각자 해 보기(실습 안내)
   (function () {
