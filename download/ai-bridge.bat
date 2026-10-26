@@ -6,7 +6,7 @@ set "D=%LOCALAPPDATA%\midong-codex-bridge"
 if not exist "%D%\workspace" mkdir "%D%\workspace"
 
 rem ---- 이 파일 안에 든 프로그램을 풀어 놓기 ----
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$t=[IO.File]::ReadAllText('%~f0',[Text.Encoding]::UTF8); $u=New-Object Text.UTF8Encoding $false; foreach($p in @(@('server.mjs','server.mjs'),@('config.json','config.json'),@('AGENTS.md','workspace\AGENTS.md'))){ $m=[regex]::Match($t,'(?s)::BEGIN '+[regex]::Escape($p[0])+'\r?\n(.*?)\r?\n::END '+[regex]::Escape($p[0])); if(-not $m.Success){ exit 1 }; [IO.File]::WriteAllText((Join-Path $env:D $p[1]),$m.Groups[1].Value,$u) }"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$t=[IO.File]::ReadAllText('%~f0',[Text.Encoding]::UTF8); $u=New-Object Text.UTF8Encoding $false; foreach($p in @(@('server.mjs','server.mjs'),@('config.json','config.json'),@('mixdog-check.mjs','mixdog-check.mjs'),@('AGENTS.md','workspace\AGENTS.md'))){ $m=[regex]::Match($t,'(?s)::BEGIN '+[regex]::Escape($p[0])+'\r?\n(.*?)\r?\n::END '+[regex]::Escape($p[0])); if(-not $m.Success){ exit 1 }; [IO.File]::WriteAllText((Join-Path $env:D $p[1]),$m.Groups[1].Value,$u) }"
 if errorlevel 1 ( echo  파일을 풀지 못했습니다. & pause & exit /b 1 )
 
 rem ---- 입장 코드 (처음 한 번 묻고 기억) ----
@@ -30,7 +30,7 @@ rem ---- 1. Node.js ----
 where node >nul 2>nul
 if errorlevel 1 (
   echo.
-  echo  [1/6] Node.js 가 없습니다.
+  echo  [1/8] Node.js 가 없습니다.
   choice /c YN /m "  지금 winget으로 설치할까요"
   if errorlevel 2 ( echo  Node.js 를 설치한 뒤 다시 실행해 주세요. & pause & exit /b 1 )
   winget install --id OpenJS.NodeJS.LTS -e
@@ -50,7 +50,38 @@ choice /c YN /m "  지금 winget으로 설치할까요"
 if not errorlevel 2 winget install --id Gyan.FFmpeg.Essentials -e
 :ffok
 
-rem ---- 2. Claude Code ----
+rem ---- 2. mixdog (이 PC에 로그인한 계정 여러 개를 수강생마다 나눠 씀, https://github.com/tribgames/mixdog) ----
+call mixdog --help >nul 2>nul
+if not errorlevel 1 goto mixlogin
+echo.
+echo  [2/8] mixdog 가 없습니다. mixdog 에 로그인한 Claude·ChatGPT 계정 여러 개를 수강생마다 하나씩 나눠 씁니다.
+echo        ^(Claude Code·Codex CLI 만 쓸 거라면 N^)
+choice /c YN /m "  지금 설치할까요 (npm i -g mixdog)"
+if errorlevel 2 goto claudecli
+call npm i -g mixdog
+:mixlogin
+rem ---- 3. mixdog 계정 ----
+node "%D%\mixdog-check.mjs"
+if not errorlevel 1 goto mixready
+echo.
+echo  [3/8] mixdog 에 Claude·ChatGPT 계정을 로그인해 주세요. 계정이 많을수록 수강생이 나눠 씁니다^(4명이면 4개씩 권장^).
+echo        ^(다른 강사 PC와 다른 계정으로 로그인해야 PC끼리 계정이 겹치지 않습니다^)
+echo        mixdog 창이 열리면 /providers 에서 Claude·ChatGPT 계정을 추가^(Sign in^)하고, 다 되면 /quit 로 닫으세요.
+choice /c YN /m "  지금 mixdog 을 열까요"
+if errorlevel 2 goto mixcheck
+call mixdog
+:mixcheck
+node "%D%\mixdog-check.mjs"
+if not errorlevel 1 goto mixready
+if errorlevel 2 ( echo  ※ 한쪽 계정만 있습니다. 없는 쪽은 Claude Code·Codex CLI 로 씁니다. & goto claudecli )
+echo  ※ mixdog 계정이 없어 Claude Code·Codex CLI 를 씁니다.
+goto claudecli
+:mixready
+echo  ✓ mixdog 계정으로 실행합니다. Claude Code·Codex CLI 확인은 건너뜁니다.
+goto tunnel
+
+:claudecli
+rem ---- 4. Claude Code ----
 if exist "%USERPROFILE%\.local\bin\claude.exe" set "PATH=%USERPROFILE%\.local\bin;%PATH%"
 where claude >nul 2>nul
 if errorlevel 1 goto claudeinstall
@@ -60,53 +91,53 @@ for /f "tokens=1" %%v in ('claude --version 2^>nul') do if not defined CCV set "
 node -e "const v=(process.argv[1]||'0.0.0').split('.').map(Number);process.exit(v[0]*1e6+(v[1]||0)*1e3+(v[2]||0)>=2001280?0:1)" "%CCV%"
 if not errorlevel 1 goto claudelogin
 echo.
-echo  [2/6] Claude Code 가 오래되었습니다^(%CCV%^). Claude 5.5 모델은 2.1.280 이상이 필요합니다.
+echo  [4/8] Claude Code 가 오래되었습니다^(%CCV%^). Claude 5.5 모델은 2.1.280 이상이 필요합니다.
 choice /c YN /m "  지금 업데이트할까요 (claude update)"
 if errorlevel 2 goto claudelogin
 call claude update
 goto claudelogin
 :claudeinstall
 echo.
-echo  [2/6] Claude Code 가 없습니다. ^(Codex 만 쓸 거라면 N^)
+echo  [4/8] Claude Code 가 없습니다. ^(Codex 만 쓸 거라면 N^)
 choice /c YN /m "  지금 설치할까요 (npm i -g @anthropic-ai/claude-code)"
 if errorlevel 2 goto codex
 call npm i -g @anthropic-ai/claude-code
 
 :claudelogin
-rem ---- 3. Claude 로그인 ----
+rem ---- 5. Claude 로그인 ----
 echo  Claude 로그인을 확인하는 중...
 echo ok| claude -p --model haiku --setting-sources project --strict-mcp-config --disable-slash-commands --tools "" >nul 2>nul
 if not errorlevel 1 goto codex
 echo.
-echo  [3/6] 이 PC의 Claude Code 가 Claude 계정에 로그인되어 있지 않습니다^(또는 로그인이 만료됨^). 브라우저에서 로그인해 주세요.
+echo  [5/8] 이 PC의 Claude Code 가 Claude 계정에 로그인되어 있지 않습니다^(또는 로그인이 만료됨^). 브라우저에서 로그인해 주세요.
 echo        ^(다른 강사 PC와 다른 계정으로 로그인하면 사용량이 나뉩니다^)
 call claude auth login
 
 :codex
-rem ---- 4. Codex CLI ----
+rem ---- 6. Codex CLI ----
 where codex >nul 2>nul
 if not errorlevel 1 goto codexlogin
 echo.
-echo  [4/6] Codex CLI 가 없습니다. ^(Claude 만 쓸 거라면 N^)
+echo  [6/8] Codex CLI 가 없습니다. ^(Claude 만 쓸 거라면 N^)
 choice /c YN /m "  지금 설치할까요 (npm i -g @openai/codex)"
 if errorlevel 2 goto tunnel
 call npm i -g @openai/codex
 
 :codexlogin
-rem ---- 5. ChatGPT 로그인 ----
+rem ---- 7. ChatGPT 로그인 ----
 call codex login status >nul 2>nul
 if not errorlevel 1 goto tunnel
 echo.
-echo  [5/6] 이 PC의 Codex 가 ChatGPT 계정에 로그인되어 있지 않습니다. 브라우저에서 로그인해 주세요.
+echo  [7/8] 이 PC의 Codex 가 ChatGPT 계정에 로그인되어 있지 않습니다. 브라우저에서 로그인해 주세요.
 echo        ^(다른 강사 PC와 다른 계정으로 로그인하면 사용량이 나뉩니다^)
 call codex login
 
 :tunnel
-rem ---- 6. Cloudflare 터널 ----
+rem ---- 8. Cloudflare 터널 ----
 where cloudflared >nul 2>nul
 if errorlevel 1 if not exist "%LOCALAPPDATA%\Microsoft\WinGet\Links\cloudflared.exe" if not exist "C:\Program Files (x86)\cloudflared\cloudflared.exe" (
   echo.
-  echo  [6/6] 수강생 기기에서 접속하려면 Cloudflare 터널 프로그램^(cloudflared^)이 필요합니다.
+  echo  [8/8] 수강생 기기에서 접속하려면 Cloudflare 터널 프로그램^(cloudflared^)이 필요합니다.
   choice /c YN /m "  지금 winget으로 설치할까요"
   if not errorlevel 2 winget install --id Cloudflare.cloudflared -e
 )
@@ -1087,6 +1118,25 @@ process.on('SIGTERM', shutdown);
   }
 }
 ::END config.json
+::BEGIN mixdog-check.mjs
+// 올인원 bat 이 부르는 확인: 이 PC의 mixdog 에 로그인한 Claude·ChatGPT 계정 수 (server.mjs 의 mixAccounts 와 같은 방법)
+// 끝 코드: 0 = 둘 다 있음, 2 = 하나만 있음, 1 = 없음
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+
+const DATA = process.env.MIXDOG_DATA_DIR || path.join(process.env.MIXDOG_HOME || path.join(os.homedir(), '.mixdog'), 'data');
+const CRED = { 'anthropic-oauth': 'anthropic-oauth-credentials.json', 'openai-oauth': 'openai-oauth.json' };
+let pools = {};
+try { pools = JSON.parse(fs.readFileSync(path.join(DATA, 'provider-accounts.json'), 'utf8')).providers || {}; } catch { /* 계정 목록 없음 */ }
+const count = provider => {
+  const rows = pools[provider] && Array.isArray(pools[provider].accounts) && pools[provider].accounts.length ? pools[provider].accounts : [{ id: 'default' }];
+  return rows.filter(a => fs.existsSync(a.id === 'default' ? path.join(DATA, CRED[provider]) : path.join(DATA, 'provider-accounts', provider, `${a.id}.json`))).length;
+};
+const claude = count('anthropic-oauth'), chatgpt = count('openai-oauth');
+console.log(`  mixdog 계정: Claude ${claude}개 · ChatGPT ${chatgpt}개`);
+process.exit(claude && chatgpt ? 0 : claude || chatgpt ? 2 : 1);
+::END mixdog-check.mjs
 ::BEGIN AGENTS.md
 # 연수 실습 작업 폴더
 
