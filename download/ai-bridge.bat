@@ -50,6 +50,36 @@ choice /c YN /m "  지금 winget으로 설치할까요"
 if not errorlevel 2 winget install --id Gyan.FFmpeg.Essentials -e
 :ffok
 
+rem ---- 음성 인식(faster-whisper): 영상 대사·노래 가사를 받아 적어 자막으로 ----
+call python -c "import sys" >nul 2>nul
+if errorlevel 1 goto sttnopy
+call python -c "import faster_whisper" >nul 2>nul
+if not errorlevel 1 goto sttmodel
+echo.
+echo  [추가] 영상 대사·노래 가사를 받아 적어 자막을 만드는 음성 인식^(faster-whisper^)이 없습니다.
+choice /c YN /m "  지금 설치할까요 (python -m pip install faster-whisper)"
+if errorlevel 2 goto sttok
+call python -m pip install --disable-pip-version-check faster-whisper
+if errorlevel 1 call python -m pip install --disable-pip-version-check --use-feature=truststore faster-whisper
+:sttmodel
+call python -c "from faster_whisper import WhisperModel as W; W('small', device='cpu', compute_type='int8', local_files_only=True)" >nul 2>nul
+if not errorlevel 1 goto sttok
+call python -c "import faster_whisper" >nul 2>nul
+if errorlevel 1 ( echo  ※ faster-whisper 가 설치되지 않아 가사·대사 자막은 쓸 수 없습니다. & goto sttok )
+echo  음성 인식 모델^(small, 약 460MB^)을 미리 받는 중... 처음 한 번만 받습니다.
+call python -c "from faster_whisper import WhisperModel as W; W('small', device='cpu', compute_type='int8')"
+if errorlevel 1 echo  ※ 모델을 받지 못했습니다. 처음 받아 적을 때 다시 받습니다^(1~2분 더 걸림^).
+goto sttok
+:sttnopy
+echo.
+echo  [추가] 영상 대사·노래 가사 자막에 쓰는 음성 인식에는 Python 이 필요합니다.
+choice /c YN /m "  지금 winget으로 Python 을 설치할까요"
+if errorlevel 2 goto sttok
+winget install --id Python.Python.3.12 -e
+echo  Python 설치가 끝나면 이 창을 닫고 이 파일을 다시 실행해 주세요. ^(그때 음성 인식을 설치합니다^)
+pause & exit /b 0
+:sttok
+
 rem ---- 2. mixdog (이 PC에 로그인한 계정 여러 개를 수강생마다 나눠 씀, https://github.com/tribgames/mixdog) ----
 call mixdog --help >nul 2>nul
 if not errorlevel 1 goto mixlogin
