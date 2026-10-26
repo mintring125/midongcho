@@ -218,9 +218,14 @@
 /* ＋ 메뉴: 내 기기에서 고르기 · 준비된 파일 */
 .cx-plus { position: relative; }
 button.cx-icbtn { background: #fff; padding: 0; font-family: inherit; }
-.cx-plusmenu { position: absolute; left: 0; bottom: calc(100% + 8px); z-index: 5; min-width: 240px; background: #fff; border: 1px solid var(--cx-line); border-radius: 14px; box-shadow: 0 10px 30px rgba(20,23,28,.16); padding: 6px; }
+button.cx-icbtn[aria-expanded="true"] { background: var(--cx-ink); border-color: var(--cx-ink); color: #fff; }
+.cx-plusmenu { position: absolute; left: -4px; bottom: calc(100% + 10px); z-index: 5; width: 280px; background: #fff; border: 1px solid var(--cx-line); border-radius: 16px; box-shadow: 0 14px 36px rgba(20,23,28,.18); padding: 8px; }
 .cx-plusmenu[hidden] { display: none; }
-.cx-plusmenu button { display: block; width: 100%; text-align: left; border: 0; background: none; border-radius: 9px; padding: 8px 10px; font: inherit; font-size: 14px; font-weight: 600; color: var(--cx-ink); cursor: pointer; }
-.cx-plusmenu button:hover { background: var(--cx-soft); }
-.cx-plusmenu small { display: block; margin-top: 1px; font-size: 12px; font-weight: 500; color: var(--cx-mute); }
-.cx-plusmenu .h { margin: 6px 10px 2px; font-size: 11px; font-weight: 700; letter-spacing: .5px; color: var(--cx-mute); }
+.cx-plusmenu button { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; border: 0; background: none; border-radius: 11px; padding: 8px; font: inherit; color: var(--cx-ink); cursor: pointer; }
+.cx-plusmenu button:hover, .cx-plusmenu button:focus-visible { background: var(--cx-soft); outline: none; }
+.cx-plusmenu .ic { flex: none; width: 36px; height: 36px; border-radius: 10px; background: var(--cx-soft); display: grid; place-items: center; font-size: 18px; }
+.cx-plusmenu button:hover .ic { background: #fff; }
+.cx-plusmenu .tx { display: flex; flex-direction: column; min-width: 0; }
+.cx-plusmenu .tx b { font-size: 14px; font-weight: 700; line-height: 1.3; }
+.cx-plusmenu .tx small { font-size: 12px; font-weight: 500; color: var(--cx-mute); line-height: 1.35; }
+.cx-plusmenu .h { margin: 6px 8px 4px; padding-top: 10px; border-top: 1px solid var(--cx-line); font-size: 11px; font-weight: 700; letter-spacing: .4px; color: var(--cx-mute); }

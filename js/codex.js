@@ -739,8 +739,9 @@
     { f: 'assets/ref/style-ref.mp4', i: '🎨', d: '모션그래픽 스타일 참고 영상' },
   ];
   const plus = $('cxPlus'), plusMenu = $('cxPlusMenu');
-  plusMenu.innerHTML = `<button type="button" role="menuitem" data-pick="device">📂 내 기기에서 고르기</button><div class="h">준비된 파일</div>`
-    + READY.map(x => `<button type="button" role="menuitem" data-ready="${esc(x.f)}">${x.i} ${esc(x.f.split('/').pop())}<small>${esc(x.d)}</small></button>`).join('');
+  const menuItem = (attr, icon, name, desc) => `<button type="button" role="menuitem" ${attr}><span class="ic">${icon}</span><span class="tx"><b>${esc(name)}</b><small>${esc(desc)}</small></span></button>`;
+  plusMenu.innerHTML = menuItem('data-pick="device"', '📂', '내 기기에서 고르기', 'PC·휴대폰의 파일 올리기') + '<div class="h">준비된 파일</div>'
+    + READY.map(x => menuItem(`data-ready="${esc(x.f)}"`, x.i, x.f.split('/').pop(), x.d)).join('');
   const plusOpen = on => { plusMenu.hidden = !on; plus.setAttribute('aria-expanded', on); };
   plus.addEventListener('click', () => plusOpen(plusMenu.hidden));
   plusMenu.addEventListener('click', e => {
