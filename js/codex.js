@@ -186,10 +186,10 @@
     })().finally(() => { claiming = null; renderStatus(); });
     return claiming;
   }
-  function ensureHome() {
+  // 파일 올리기·목록도 자리 잡은 PC와 같은 곳을 써야 한다(아니면 올린 PC와 목록을 읽는 PC가 달라 「비어 있어요」가 된다)
+  async function ensureHome() {
     if (home && allPCs().includes(home) && usable(home) && engOK(home)) return home;
-    claim();   // 자리는 뒤에서 잡고, 그동안은 여유 있는 PC를 쓴다(내 PC로 정하지는 않음)
-    return pick();
+    return (await claim()) || pick();
   }
   function renderStatus() {
     const on = allPCs().filter(u => stat[u] && stat[u].ok);
@@ -650,9 +650,9 @@
   }
 
   // ---------- 파일 · 미리보기 (내 PC의 내 작업 폴더) ----------
-  const filesPC = () => { const t = cur(); return (t && t.bridge && usable(t.bridge) && t.bridge) || ensureHome(); };
+  const filesPC = async () => { const t = cur(); return (t && t.bridge && usable(t.bridge) && t.bridge) || await ensureHome(); };
   async function refreshFiles(afterTurn) {
-    const u = filesPC(); if (!u) return;
+    const u = await filesPC(); if (!u) return;
     try { const r = await fetchT(u + '/files', { headers: hdr() }); files = (await r.json()).files || []; } catch { return; }
     files.pc = u;
     renderFiles();
@@ -689,7 +689,7 @@
     prevHidden = !shown;
   }).observe($('cxPrevBox'));
   function preview(p, pc, who) {   // pc·who: 모두 보기에서 다른 참가자의 파일을 열 때
-    const u = pc || filesPC(); if (!p || !u) return;
+    const t = cur(), u = pc || (t && t.bridge && usable(t.bridge) && t.bridge) || files.pc; if (!p || !u) return;   // 이 스레드의 PC, 아니면 파일 목록을 읽어 온 PC
     const url = wsUrl(u, p, who), box = $('cxPrevBox');
     tab('prev');
     $('cxPrevName').textContent = p;
@@ -719,7 +719,7 @@
   // ---------- 올리기 ----------
   async function upload(list) {
     if (!anyOnline()) await healthAll();
-    const u = filesPC();
+    const u = await filesPC();
     if (!u) { add('AI 브리지에 연결되지 않아 파일을 올릴 수 없습니다.', 'm-err'); return; }
     for (const f of list) {
       const note = add(`📎 ${esc(f.name)} 올리는 중…`, 'm-done');
